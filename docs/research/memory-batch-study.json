@@ -1,0 +1,209 @@
+{
+  "date": "2026-10-30",
+  "host": {
+    "chip": "M1 Pro",
+    "ram_gib": 16,
+    "cpu_cores": 10
+  },
+  "backend": "coreml-gpu",
+  "units": "bytes unless explicitly named otherwise",
+  "unguarded_15_pages": {
+    "after_load": {
+      "rss_bytes": 297582592,
+      "physical_footprint_bytes": 396117648,
+      "lifetime_peak_physical_footprint_bytes": 396117648
+    },
+    "after_last_image": {
+      "rss_bytes": 491683840,
+      "physical_footprint_bytes": 5518755808,
+      "lifetime_peak_physical_footprint_bytes": 5610997728
+    },
+    "peak_worker_rss_bytes": 671793152,
+    "peak_worker_physical_footprint_bytes": 5610997728,
+    "peak_sampled_combined_parent_worker_footprint_bytes": 5646945040,
+    "median_warm_task_seconds": 1.355764916021144
+  },
+  "guarded_20_pages": {
+    "images": 20,
+    "wall_seconds": 30.417067500005942,
+    "seconds_per_page_including_reloads": 1.520853375000297,
+    "worker_loads": [
+      {
+        "reason": "initial",
+        "model_load_seconds": 1.5373183750198223,
+        "memory": {
+          "rss_bytes": 741277696,
+          "physical_footprint_bytes": 406619792,
+          "peak_physical_footprint_bytes": 406619792,
+          "peak_rss_bytes": 874266624
+        }
+      },
+      {
+        "reason": "gpu-memory-threshold",
+        "model_load_seconds": 0.7872318750014529,
+        "memory": {
+          "rss_bytes": 758464512,
+          "physical_footprint_bytes": 383829624,
+          "peak_physical_footprint_bytes": 383829624,
+          "peak_rss_bytes": 891682816
+        }
+      },
+      {
+        "reason": "gpu-memory-threshold",
+        "model_load_seconds": 0.5493960829917341,
+        "memory": {
+          "rss_bytes": 780779520,
+          "physical_footprint_bytes": 406128248,
+          "peak_physical_footprint_bytes": 406128248,
+          "peak_rss_bytes": 914046976
+        }
+      }
+    ],
+    "peak_worker_physical_footprint_bytes": 3446130752,
+    "peak_worker_rss_bytes": 1194606592,
+    "peak_sampled_parent_children_footprint_bytes": 3522219512,
+    "all_pages_complete": true
+  },
+  "after_first_guarded_page": {
+    "rss_bytes": 823066624,
+    "physical_footprint_bytes": 1717536688,
+    "peak_physical_footprint_bytes": 1813432264,
+    "peak_rss_bytes": 880345088
+  },
+  "validation": {
+    "pngs_checked": 100,
+    "sources_unchanged": 20,
+    "mask_invariants_verified": 20,
+    "raw_pngs_identical_to_previous_gpu_reference": 20,
+    "unit_tests_passed": 23,
+    "unit_tests_skipped": 0
+  },
+  "scope": "Cached model loading; 512 canvas; source pages up to 1200x1753; worker OS-accounted footprint excludes attribution to all shared Core ML helpers/system memory; threshold is soft between pages.",
+  "extra_autorelease_pool_15_pages": {
+    "after_load": {
+      "rss_bytes": 683917312,
+      "physical_footprint_bytes": 389727816,
+      "lifetime_peak_physical_footprint_bytes": 389727816
+    },
+    "after_last_image": {
+      "rss_bytes": 741933056,
+      "physical_footprint_bytes": 5560764312,
+      "lifetime_peak_physical_footprint_bytes": 5560764312
+    },
+    "peak_worker_physical_footprint_bytes": 5560764312
+  },
+  "network_only_12_predictions_and_model_deletion": [
+    {
+      "stage": "LOADED",
+      "memory": {
+        "rss_bytes": 760987648,
+        "physical_footprint_bytes": 422151824,
+        "lifetime_peak_physical_footprint_bytes": 422151824
+      }
+    },
+    {
+      "stage": "PREDICT 1",
+      "memory": {
+        "rss_bytes": 775847936,
+        "physical_footprint_bytes": 1680213816,
+        "lifetime_peak_physical_footprint_bytes": 1680213816
+      }
+    },
+    {
+      "stage": "PREDICT 2",
+      "memory": {
+        "rss_bytes": 782581760,
+        "physical_footprint_bytes": 1921992504,
+        "lifetime_peak_physical_footprint_bytes": 1981974328
+      }
+    },
+    {
+      "stage": "PREDICT 3",
+      "memory": {
+        "rss_bytes": 764968960,
+        "physical_footprint_bytes": 1955628856,
+        "lifetime_peak_physical_footprint_bytes": 2058389304
+      }
+    },
+    {
+      "stage": "PREDICT 4",
+      "memory": {
+        "rss_bytes": 738312192,
+        "physical_footprint_bytes": 2031339320,
+        "lifetime_peak_physical_footprint_bytes": 2125694776
+      }
+    },
+    {
+      "stage": "PREDICT 5",
+      "memory": {
+        "rss_bytes": 735559680,
+        "physical_footprint_bytes": 2106902328,
+        "lifetime_peak_physical_footprint_bytes": 2201274168
+      }
+    },
+    {
+      "stage": "PREDICT 6",
+      "memory": {
+        "rss_bytes": 619216896,
+        "physical_footprint_bytes": 2034468616,
+        "lifetime_peak_physical_footprint_bytes": 2276869944
+      }
+    },
+    {
+      "stage": "PREDICT 7",
+      "memory": {
+        "rss_bytes": 619347968,
+        "physical_footprint_bytes": 2110031624,
+        "lifetime_peak_physical_footprint_bytes": 2276869944
+      }
+    },
+    {
+      "stage": "PREDICT 8",
+      "memory": {
+        "rss_bytes": 514949120,
+        "physical_footprint_bytes": 2489845512,
+        "lifetime_peak_physical_footprint_bytes": 2489845512
+      }
+    },
+    {
+      "stage": "PREDICT 9",
+      "memory": {
+        "rss_bytes": 502267904,
+        "physical_footprint_bytes": 2621818560,
+        "lifetime_peak_physical_footprint_bytes": 2627421960
+      }
+    },
+    {
+      "stage": "PREDICT 10",
+      "memory": {
+        "rss_bytes": 506314752,
+        "physical_footprint_bytes": 2907113152,
+        "lifetime_peak_physical_footprint_bytes": 2907113152
+      }
+    },
+    {
+      "stage": "PREDICT 11",
+      "memory": {
+        "rss_bytes": 506150912,
+        "physical_footprint_bytes": 3067168448,
+        "lifetime_peak_physical_footprint_bytes": 3174123200
+      }
+    },
+    {
+      "stage": "PREDICT 12",
+      "memory": {
+        "rss_bytes": 507789312,
+        "physical_footprint_bytes": 3142780608,
+        "lifetime_peak_physical_footprint_bytes": 3262318272
+      }
+    },
+    {
+      "stage": "DELETED_MODEL",
+      "memory": {
+        "rss_bytes": 188743680,
+        "physical_footprint_bytes": 2753414536,
+        "lifetime_peak_physical_footprint_bytes": 3262318272
+      }
+    }
+  ]
+}

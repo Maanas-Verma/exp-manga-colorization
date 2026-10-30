@@ -23,6 +23,7 @@ from PIL import Image
 
 from .images import letterbox, load_image, restore_size, retain_ink, retain_luminance, validate_output, validate_prediction
 from .model import ROOT, MangaLight, ensure_models, sha256
+from .memory import memory_snapshot,recycle_gpu_worker
 from .text import check_ocr, restore_text, reviewed_regions
 
 VERSION = '1.0.0'
@@ -107,19 +108,20 @@ def process_image(model,job):
             'input_format':format_name,'inference_canvas':[512,512],'content_box':list(box),
             'inference_seconds':inference_seconds,'processing_seconds':time.perf_counter()-started,
             'worker_lifetime_peak_rss_bytes':int(rss),'text_restoration':text_info,'artifacts':artifacts,
-            'execution':getattr(model,'execution',{'backend':'cpu'}),'network_timings':getattr(model,'last_timings',{})}
+            'execution':getattr(model,'execution',{'backend':'cpu'}),'network_timings':getattr(model,'last_timings',{}),
+            'memory':memory_snapshot()}
 
 
 def worker(connection,cache,threads,backend='cpu'):
     try:
         started=time.perf_counter();model=MangaLight(cache,threads,backend=backend)
         connection.send({'status':'loaded','model_load_seconds':time.perf_counter()-started,
-                         'execution':getattr(model,'execution',{'backend':backend})})
+                         'execution':getattr(model,'execution',{'backend':backend}),'memory':memory_snapshot()})
         while True:
             job=connection.recv()
             if job is None:break
             try:connection.send(process_image(model,job))
-            except Exception as error:connection.send({'status':'failed','error':f'{type(error).__name__}: {error}'})
+            except Exception as error:connection.send({'status':'failed','error':f'{type(error).__name__}: {error}','memory':memory_snapshot()})
     except (EOFError,BrokenPipeError):pass
     except Exception as error:
         connection.send({'status':'failed','error':f'{type(error).__name__}: {error}'})
@@ -161,12 +163,15 @@ def report(output,manifest):
     results=manifest['results'];images=manifest['images']
     complete=sum(result.get('status')=='complete' for result in results.values())
     records=io.StringIO();writer=csv.writer(records)
-    writer.writerow(['image','status','processing_seconds','inference_seconds','backend','text_method','restored_fraction','error'])
+    writer.writerow(['image','status','processing_seconds','inference_seconds','backend','text_method','restored_fraction',
+                     'worker_rss_bytes','worker_physical_footprint_bytes','worker_peak_physical_footprint_bytes','error'])
     rows=[]
     for image in images:
         result=results.get(image['name'],{'status':'pending'});status=result['status']
         writer.writerow([image['name'],status,result.get('processing_seconds'),result.get('inference_seconds'),result.get('execution',{}).get('backend','cpu'),
-                         result.get('text_restoration',{}).get('method'),result.get('text_restoration',{}).get('restored_fraction'),result.get('error','')])
+                         result.get('text_restoration',{}).get('method'),result.get('text_restoration',{}).get('restored_fraction'),
+                         result.get('memory',{}).get('rss_bytes'),result.get('memory',{}).get('physical_footprint_bytes'),
+                         result.get('memory',{}).get('peak_physical_footprint_bytes'),result.get('error','')])
         cells=[]
         for key,(_,label) in VARIANTS.items():
             if status=='complete':
@@ -181,6 +186,7 @@ def report(output,manifest):
 <style>:root{{font:16px system-ui;color-scheme:light dark}}body{{margin:24px}}table{{border-collapse:collapse;width:100%;table-layout:fixed}}th,td{{padding:8px;vertical-align:top;border-bottom:1px solid #8885}}th:first-child{{width:130px;overflow-wrap:anywhere}}img{{width:100%;height:auto;background:white}}p{{line-height:1.5}}.scroll{{overflow:auto}}@media(max-width:900px){{table{{min-width:1100px}}}}</style>
 <h1>Manga Light Colorizer · {complete}/{len(images)} complete</h1>
 <p>Execution backend: <strong>{html.escape(manifest['settings'].get('backend','cpu'))}</strong>. Initial model loading/compilation is measured separately from image tasks.</p>
+<p>Memory records distinguish resident RAM from OS-accounted physical footprint. GPU workers are recycled between pages at the configured footprint threshold; this is a soft limit, not a hard maximum for an individual page. Worker reload times are recorded separately in the run details.</p>
 <p>Five outputs per page. The recommended version adds original text to the ink-only image. The mask is binary: white pixels come from the source, black pixels keep the ink-only result. Full luminance replacement is the older comparison and can wash out the preferred shading.</p>
 <p>Inference uses a 512 × 512 padded canvas; PNGs recover original dimensions. Reviewed masks are used for known source checksums. Automatic English OCR on new pages can miss text; inspect the mask. Logos, Japanese lettering and oversized effects are outside the reviewed masks.</p>
 <p><a href="manifest.json">Run details and checksums</a> · <a href="metrics.csv">Per-image metrics</a>. Timings include decode, inference, all five variants, PNG saves and validation; model loading is separate.</p>
@@ -232,6 +238,8 @@ def run(args):
         manifest['model']=ensure_models(cache,lambda additional=0:check_storage(output,additional,args.min_free_gib))
         manifest['dependencies']={name:importlib.metadata.version(name) for name in ['numpy','pillow','opencv-python-headless','onnxruntime']}
         manifest['python']=platform.python_version()
+        manifest['worker_policy']={'gpu_worker_memory_gib':args.gpu_worker_memory_gib,'fallback_max_images':8,
+                                   'scope':'Soft per-worker physical footprint threshold checked between pages; shared helpers/system memory are excluded.'}
         if args.backend=='coreml-gpu':
             import onnxruntime as ort
             compiled=ROOT/'.cache/coreml'/ort.__version__/sha256(ROOT/'assets/model.json')[:16]/'gpu-rewrite-v1'
@@ -243,9 +251,18 @@ def run(args):
             if loaded['status']!='loaded':raise RuntimeError(loaded['error'])
             manifest['model_load_seconds']=loaded['model_load_seconds']
             manifest['execution']=loaded.get('execution',{'backend':args.backend})
+            manifest['worker_loads']=[{'reason':'initial','model_load_seconds':loaded['model_load_seconds'],'memory':loaded.get('memory')}]
+            completed_in_worker=0;last_memory=loaded.get('memory')
             for index,image in enumerate(images,1):
                 if image not in pending:
                     print(f'[{index}/{len(images)}] skipped verified {image["name"]}',flush=True);continue
+                if completed_in_worker and recycle_gpu_worker(args.backend,last_memory,args.gpu_worker_memory_gib,completed_in_worker):
+                    print('Recycling Apple GPU worker to release retained memory.',flush=True)
+                    client.close();client=Worker(cache,args.threads,args.timeout,args.backend)
+                    loaded=client.receive()
+                    if loaded['status']!='loaded':raise RuntimeError(loaded['error'])
+                    manifest['worker_loads'].append({'reason':'gpu-memory-threshold','model_load_seconds':loaded['model_load_seconds'],'memory':loaded.get('memory')})
+                    completed_in_worker=0;last_memory=loaded.get('memory')
                 # Reserve uncompressed space for all variants before processing this page.
                 check_storage(output,image['size'][0]*image['size'][1]*15,args.min_free_gib)
                 manifest['results'][image['name']]={'status':'running'};report(output,manifest)
@@ -255,6 +272,7 @@ def run(args):
                 except (TimeoutError,RuntimeError) as error:
                     manifest['results'][image['name']]={'status':'failed','error':str(error)};report(output,manifest);raise
                 result['elapsed_seconds']=time.perf_counter()-started
+                completed_in_worker+=1;last_memory=result.get('memory')
                 manifest['results'][image['name']]=result
                 if result['status']=='complete' and not valid_result(result,image,output):
                     result.update(status='failed',error='Output verification failed in parent process')
@@ -276,6 +294,8 @@ def main():
     parser.add_argument('--threads',type=int,default=4)
     parser.add_argument('--backend',choices=['cpu','coreml-gpu'],default='cpu',
                         help='CPU baseline or optimized Apple GPU via Core ML (default: cpu)')
+    parser.add_argument('--gpu-worker-memory-gib',type=float,default=3,
+                        help='Recycle the GPU worker between pages at this physical footprint in GiB (default: 3; soft limit)')
     parser.add_argument('--timeout',type=float,default=1800,help='Model load or complete image worker timeout in seconds')
     parser.add_argument('--min-free-gib',type=float,default=2,
                         help='Free disk reserve after estimated output/download writes, in GiB (default: 2; 0 disables the reserve)')
@@ -284,6 +304,8 @@ def main():
     if args.threads<1 or args.timeout<=0:parser.error('Threads and timeout must be positive')
     if not math.isfinite(args.min_free_gib) or args.min_free_gib<0:
         parser.error('--min-free-gib must be a finite, nonnegative number')
+    if not math.isfinite(args.gpu_worker_memory_gib) or args.gpu_worker_memory_gib<=0:
+        parser.error('--gpu-worker-memory-gib must be a finite, positive number')
     try:return run(args)
     except (ValueError,RuntimeError,OSError,KeyError) as error:
         print(f'Error: {error}',file=sys.stderr);return 1

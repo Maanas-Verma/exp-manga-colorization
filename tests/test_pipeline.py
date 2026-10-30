@@ -35,7 +35,7 @@ class PipelineTests(unittest.TestCase):
 
     def args(self,root):
         return SimpleNamespace(input=str(root/'input'),output=str(root/'output/input'),recursive=False,
-                               regions_file=None,ocr_language='eng',threads=4,timeout=1800,min_free_gib=2,backend='cpu',force=False)
+                               regions_file=None,ocr_language='eng',threads=4,timeout=1800,min_free_gib=2,backend='cpu',gpu_worker_memory_gib=3,force=False)
 
     def test_five_folders_resume_and_only_corrupt_page_reprocessed(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -122,6 +122,28 @@ class PipelineTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'estimated new files'):
                     pipeline.check_storage(root,additional=100*1024**2)
                 pipeline.check_storage(root,additional=100*1024**2,min_free_gib=0)
+
+    def test_gpu_worker_recycles_without_reprocessing_completed_pages(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);self.fixture(root);args=self.args(root);args.backend='coreml-gpu';instances=[]
+            class FakeWorker:
+                def __init__(self,*_):self.connection=SimpleNamespace(send=self.send);self.job=None;self.closes=0;instances.append(self)
+                def send(self,job):self.job=job
+                def receive(self):
+                    if self.job is None:return {'status':'loaded','model_load_seconds':.1,'memory':{'physical_footprint_bytes':400*1024**2}}
+                    result=pipeline.process_image(FakeModel(),self.job)
+                    result['memory']={'physical_footprint_bytes':4*1024**3,'peak_physical_footprint_bytes':4*1024**3}
+                    return result
+                def close(self):self.closes+=1
+            with patch.object(pipeline,'ROOT',root),patch.object(pipeline,'Worker',FakeWorker),patch.object(pipeline,'ensure_models',return_value={'files':[]}),patch.object(pipeline.shutil,'disk_usage',return_value=SimpleNamespace(free=50*1024**3)):
+                self.assertEqual(pipeline.run(args),0)
+                manifest=json.loads((Path(args.output)/'manifest.json').read_text())
+                self.assertEqual(len(instances),2);self.assertTrue(all(worker.closes==1 for worker in instances))
+                self.assertEqual(len(manifest['worker_loads']),2)
+                self.assertEqual(manifest['worker_loads'][1]['reason'],'gpu-memory-threshold')
+                self.assertTrue(all(result['status']=='complete' for result in manifest['results'].values()))
+                args.gpu_worker_memory_gib=4
+                self.assertEqual(pipeline.run(args),0);self.assertEqual(len(instances),2)
 
     def test_worker_records_failure_and_continues(self):
         connection=Mock();connection.recv.side_effect=[{'name':'bad'},{'name':'good'},None]

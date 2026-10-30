@@ -29,6 +29,8 @@ The script creates `.venv`, installs pinned [requirements](requirements.txt) whe
 
 The CPU backend remains the default and keeps existing runs compatible. `--backend coreml-gpu` specializes the ONNX graphs and uses Core ML with `CPUAndGPU` compute units. On this M1 Pro, a repeated same-image test improved from **3.05 s to 1.17 s per complete five-output task**, and network inference from **2.38 s to 0.32 s**. First GPU setup took about **46 seconds** to prepare/compile caches; later loads reused them. Cold first-image latency is higher than warm latency. See [measurements, precision and implementation](docs/acceleration.md).
 
+For long GPU runs, the worker is recycled between pages when its OS-accounted physical footprint reaches **3 GiB** by default, releasing retained Core ML resources. This is a soft threshold; an individual page can exceed it before completion. A 20-page test completed in **30.4 seconds including reloads**, peaking at **3.21 GiB worker footprint**. RSS alone undercounts this use. See [RAM measurements and batch limits](docs/memory-and-batching.md); adjust with `--gpu-worker-memory-gib N`. This policy does not change output pixels or invalidate completed jobs.
+
 By default, results go to `output/INPUT_FOLDER_NAME/`. Open `report.html` there for the gallery, completion status and links. Every output PNG has the original decoded dimensions.
 
 ```text

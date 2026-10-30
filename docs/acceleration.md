@@ -19,6 +19,8 @@ One cold task and three warm repeats on `1194-005.png`, sequentially, with ident
 
 This is about **2.6× faster per warm full task** and **7.4× faster for warm inference** in this comparison. Task times include image decode, preparation, all variants, saving and validation; model load/setup and parent gallery rendering are separate. Source resolutions, text restoration and the five output folders are unchanged.
 
+These initial timing trials were short. Subsequent physical-memory profiling found retention across longer runs, so the folder runner now recycles the GPU worker at a default 3 GiB between-page threshold. A guarded 20-page run averaged 1.52 s/page including reloads and peaked at 3.21 GiB worker physical footprint; see [the separate memory and batching study](memory-and-batching.md). RSS alone is insufficient for estimating this GPU workload.
+
 The finalized CLI also ran all five original pages: **2.05, 1.08, 1.20, 1.05, 1.06 seconds**, with cached model loading at **1.63 seconds**. All 25 output PNGs and source hashes were validated.
 
 An additional unreviewed page, including both Tesseract passes, measured **3.43 s CPU versus 1.39 s GPU** for the warm full-task median. Its CPU/GPU text masks were identical. OCR and PNG output still run on CPU; accelerating the network does not accelerate those stages.

@@ -10,6 +10,7 @@ import statistics
 
 from manga_colorizer.model import ROOT,ensure_models,sha256
 from manga_colorizer.pipeline import Worker,check_storage
+from manga_colorizer.memory import recycle_gpu_worker
 from manga_colorizer.text import check_ocr,reviewed_regions
 
 
@@ -37,19 +38,28 @@ def main():
             try:
                 loaded=client.receive()
                 if loaded['status']!='loaded':raise RuntimeError(loaded.get('error','Model load failed'))
-                trials=[]
+                trials=[];loads=[loaded];completed_in_worker=0;last_memory=loaded.get('memory')
                 for index in range(args.trials):
+                    reloaded=False
+                    if completed_in_worker and recycle_gpu_worker(backend,last_memory,3,completed_in_worker):
+                        client.close();client=Worker(ROOT/'.cache/models',4,1800,backend)
+                        loaded=client.receive()
+                        if loaded['status']!='loaded':raise RuntimeError(loaded.get('error','Model reload failed'))
+                        loads.append(loaded);completed_in_worker=0;reloaded=True
                     folder=work/backend/f'trial-{index}'
                     client.connection.send({'path':str(source),'sha256':digest,'regions':regions,'language':'eng',
                                             'output':str(folder),'output_name':'image.png'})
                     result=client.receive()
                     if result['status']!='complete':raise RuntimeError(result.get('error','Image failed'))
+                    result['cold_trial']=index==0 or reloaded
+                    completed_in_worker+=1;last_memory=result.get('memory')
                     trials.append(result)
                     print(f'{backend} {index+1}/{args.trials}: {result["processing_seconds"]:.3f}s task, {result["inference_seconds"]:.3f}s inference',flush=True)
-                results['backends'][backend]={'model_load_seconds':loaded['model_load_seconds'],
+                warm=[trial for trial in trials if not trial['cold_trial']]
+                results['backends'][backend]={'model_load_seconds':loads[0]['model_load_seconds'],'worker_loads':loads,
                     'execution':loaded.get('execution'),'trials':trials,
-                    'warm_task_median_seconds':statistics.median(t['processing_seconds'] for t in trials[1:]),
-                    'warm_inference_median_seconds':statistics.median(t['inference_seconds'] for t in trials[1:])}
+                    'warm_task_median_seconds':statistics.median(t['processing_seconds'] for t in warm) if warm else None,
+                    'warm_inference_median_seconds':statistics.median(t['inference_seconds'] for t in warm) if warm else None}
                 (work/'results.json').write_text(json.dumps(results,indent=2)+'\n')
             finally:client.close()
         print(f'Results: {work/"results.json"}')

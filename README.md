@@ -59,6 +59,7 @@ Use the format in `assets/text-regions.json`: `images` maps names to `sha256` an
 ./colorize.sh input --force                  # reruns a matching collection
 ./colorize.sh "My Manga" --recursive         # preserves subfolder paths
 ./colorize.sh input --threads 4 --timeout 1800
+./colorize.sh input --min-free-gib 2          # default free-disk reserve
 
 # If you manage the environment yourself:
 python3 -m venv .venv
@@ -68,7 +69,9 @@ python3 -m venv .venv
 
 Inputs/settings must match an existing run to resume; use a new `--output` folder after changing images, settings or reviewed regions. Corrupted/missing outputs are regenerated. Supported formats: PNG, JPEG, WebP, BMP, TIFF. Decoding follows actual bytes, including JPEG named `.png`. EXIF orientation and transparency are normalized onto white. TIFF uses the first frame. PNG filename collisions are rejected before processing.
 
-Inference uses a proportionally resized **512 × 512 white-padded canvas**, then restores original dimensions. This is not native-resolution inference. One isolated CPU worker handles the collection. The default timeout is 30 minutes for model loading and each complete image job; a project lock prevents simultaneous runs. Storage guards preserve 20 GiB free and cap project runtime/cache/results at 35 GiB. Input/output directories must be separate without nesting.
+Inference uses a proportionally resized **512 × 512 white-padded canvas**, then restores original dimensions. This is not native-resolution inference. One isolated CPU worker handles the collection. The default timeout is 30 minutes for model loading and each complete image job; a project lock prevents simultaneous runs. Storage guards preserve a configurable **2 GiB free-disk reserve** after estimated writes and cap project runtime/cache/results at 35 GiB. Input/output directories must be separate without nesting.
+
+The reserve is a buffer for other applications, not model storage or RAM usage. The earlier multi-model benchmark used 20 GiB; that floor was removed from the production default. Use `--min-free-gib 20` to retain it or `--min-free-gib 0` to disable the extra reserve (estimated writes and the project storage cap still apply). Changing the reserve does not invalidate completed pages. On macOS the script measures immediately free filesystem space; Finder/System Settings can show a larger available figure that includes purgeable data. See [Apple's explanation](https://support.apple.com/guide/disk-utility/get-detailed-information-about-a-disk-dskutl1005/mac).
 
 ## Verification
 

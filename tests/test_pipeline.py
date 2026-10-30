@@ -35,7 +35,7 @@ class PipelineTests(unittest.TestCase):
 
     def args(self,root):
         return SimpleNamespace(input=str(root/'input'),output=str(root/'output/input'),recursive=False,
-                               regions_file=None,ocr_language='eng',threads=4,timeout=1800,force=False)
+                               regions_file=None,ocr_language='eng',threads=4,timeout=1800,min_free_gib=2,force=False)
 
     def test_five_folders_resume_and_only_corrupt_page_reprocessed(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -61,6 +61,7 @@ class PipelineTests(unittest.TestCase):
                     original=np.asarray(load_image(Path(image['path']))[0]);ink=np.asarray(load_image(output/result['artifacts']['ink']['path'])[0])
                     np.testing.assert_array_equal(restored[selected],original[selected])
                     np.testing.assert_array_equal(restored[~selected],ink[~selected])
+                args.min_free_gib=3
                 self.assertEqual(pipeline.run(args),0);self.assertEqual(len(calls),2)
                 result=manifest['results']['page-0.png'];(output/result['artifacts']['mask']['path']).write_bytes(b'corrupt')
                 self.assertEqual(pipeline.run(args),0);self.assertEqual(calls,['page-0.png','page-1.png','page-0.png'])
@@ -102,8 +103,20 @@ class PipelineTests(unittest.TestCase):
     def test_storage_guard_rejects_low_free_disk(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary)
+            with patch.object(pipeline,'ROOT',root),patch.object(pipeline.shutil,'disk_usage',return_value=SimpleNamespace(free=1024**3)):
+                with self.assertRaisesRegex(RuntimeError,'1.00 GiB free; 2 GiB reserve'):pipeline.check_storage(root)
+
+    def test_benchmark_reserve_is_optional_and_estimated_writes_are_counted(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
             with patch.object(pipeline,'ROOT',root),patch.object(pipeline.shutil,'disk_usage',return_value=SimpleNamespace(free=19*1024**3)):
-                with self.assertRaisesRegex(RuntimeError,'20 GiB'):pipeline.check_storage(root)
+                pipeline.check_storage(root,additional=100*1024**2)
+                with self.assertRaisesRegex(RuntimeError,'19.00 GiB free; 20 GiB reserve'):
+                    pipeline.check_storage(root,min_free_gib=20)
+            with patch.object(pipeline,'ROOT',root),patch.object(pipeline.shutil,'disk_usage',return_value=SimpleNamespace(free=2*1024**3)):
+                with self.assertRaisesRegex(RuntimeError,'estimated new files'):
+                    pipeline.check_storage(root,additional=100*1024**2)
+                pipeline.check_storage(root,additional=100*1024**2,min_free_gib=0)
 
     def test_worker_records_failure_and_continues(self):
         connection=Mock();connection.recv.side_effect=[{'name':'bad'},{'name':'good'},None]

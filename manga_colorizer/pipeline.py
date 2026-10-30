@@ -8,6 +8,7 @@ import html
 import importlib.metadata
 import io
 import json
+import math
 import multiprocessing
 from pathlib import Path
 import platform
@@ -40,15 +41,22 @@ def write_json(path,value):
     temporary.write_text(json.dumps(value,indent=2)+'\n');temporary.replace(path)
 
 
-def check_storage(output,additional=0):
+def check_storage(output,additional=0,min_free_gib=2):
     locations = [ROOT/'.cache',ROOT/'.venv',ROOT/'output']
     if not output.is_relative_to(ROOT/'output'):locations.append(output)
     used = sum(path.stat().st_size for directory in locations if directory.exists()
                for path in directory.rglob('*') if path.is_file() and not path.is_symlink())
     if used+additional > 35*1024**3:
         raise RuntimeError('Project runtime/cache/results would exceed the 35 GiB limit')
-    if shutil.disk_usage(output if output.exists() else output.parent).free-additional < 20*1024**3:
-        raise RuntimeError('This operation must preserve at least 20 GiB free disk space')
+    measured_path=output if output.exists() else output.parent
+    free=shutil.disk_usage(measured_path).free
+    reserve=min_free_gib*1024**3
+    if free-additional < reserve:
+        raise RuntimeError(f'Insufficient immediately free disk space at {measured_path}: '
+                           f'{free/1024**3:.2f} GiB free; '
+                           f'{min_free_gib:g} GiB reserve + {additional/1024**3:.2f} GiB estimated new files required. '
+                           'macOS available space can include purgeable data. '
+                           'Adjust the reserve with --min-free-gib N.')
 
 
 def discover(input_dir,recursive=False):
@@ -212,8 +220,11 @@ def run(args):
         pending=[image for image in images if args.force or not valid_result(manifest['results'].get(image['name'],{}),image,output)]
         if not pending:
             print(f'All {len(images)} pages already valid. Report: {output/"report.html"}');return 0
-        check_storage(output)
-        manifest['model']=ensure_models(cache,lambda additional=0:check_storage(output,additional))
+        # An operational reserve does not affect pixels or invalidate an existing run.
+        manifest['storage_policy']={'min_free_gib':args.min_free_gib,'max_storage_gib':35,
+                                    'measurement':'Immediately free filesystem bytes, excluding purgeable capacity'}
+        check_storage(output,min_free_gib=args.min_free_gib)
+        manifest['model']=ensure_models(cache,lambda additional=0:check_storage(output,additional,args.min_free_gib))
         manifest['dependencies']={name:importlib.metadata.version(name) for name in ['numpy','pillow','opencv-python-headless','onnxruntime']}
         manifest['python']=platform.python_version()
         client=Worker(cache,args.threads,args.timeout)
@@ -225,7 +236,7 @@ def run(args):
                 if image not in pending:
                     print(f'[{index}/{len(images)}] skipped verified {image["name"]}',flush=True);continue
                 # Reserve uncompressed space for all variants before processing this page.
-                check_storage(output,image['size'][0]*image['size'][1]*15)
+                check_storage(output,image['size'][0]*image['size'][1]*15,args.min_free_gib)
                 manifest['results'][image['name']]={'status':'running'};report(output,manifest)
                 started=time.perf_counter()
                 client.connection.send({**image,'output':str(output),'regions':known.get(image['sha256']),'language':args.ocr_language})
@@ -253,9 +264,13 @@ def main():
     parser.add_argument('--ocr-language',default='eng',help='Installed Tesseract language; English filtering is currently used')
     parser.add_argument('--threads',type=int,default=4)
     parser.add_argument('--timeout',type=float,default=1800,help='Model load or complete image worker timeout in seconds')
+    parser.add_argument('--min-free-gib',type=float,default=2,
+                        help='Free disk reserve after estimated output/download writes, in GiB (default: 2; 0 disables the reserve)')
     parser.add_argument('--force',action='store_true',help='Rerun images in an otherwise matching output folder')
     args=parser.parse_args()
     if args.threads<1 or args.timeout<=0:parser.error('Threads and timeout must be positive')
+    if not math.isfinite(args.min_free_gib) or args.min_free_gib<0:
+        parser.error('--min-free-gib must be a finite, nonnegative number')
     try:return run(args)
     except (ValueError,RuntimeError,OSError,KeyError) as error:
         print(f'Error: {error}',file=sys.stderr);return 1

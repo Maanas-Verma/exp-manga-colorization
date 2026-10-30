@@ -2,6 +2,8 @@
 
 Decision recorded **2026-10-30**. Selected model: **#3 Manga Light Colorizer**, using its raw palette, source dark ink and selective original-text restoration. This is a decision for the tested manga pages on an **Apple M1 Pro / 16 GiB unified memory**, not a universal ranking of colorizers.
 
+After selection, an optimized Apple GPU execution path was implemented for this same model. The original selection measurements below remain CPU measurements; the separate [acceleration study](acceleration.md) records Core ML results, first-compilation cost and numerical comparisons.
+
 ## Why model 3
 
 The user preferred model 3's raw output over the other local results. It gave coherent filled colors, useful shading and better character palettes on the comparison page. The original black-and-white layout stayed recognizable, unlike diffusion editors that regenerated text and facial details. It needed neither a colored character reference nor a prompt. Both ONNX networks total 300.3 MB and run on CPU with a small dependency set.

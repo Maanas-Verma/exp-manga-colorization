@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""Folder orchestration, isolated CPU worker, verified outputs and local gallery."""
+"""Folder orchestration, isolated inference worker, verified outputs and gallery."""
 import argparse
 import csv
 from datetime import datetime, timezone
@@ -106,13 +106,15 @@ def process_image(model,job):
     return {'status':'complete','input_sha256':job['sha256'],'original_size':list(original.size),
             'input_format':format_name,'inference_canvas':[512,512],'content_box':list(box),
             'inference_seconds':inference_seconds,'processing_seconds':time.perf_counter()-started,
-            'worker_lifetime_peak_rss_bytes':int(rss),'text_restoration':text_info,'artifacts':artifacts}
+            'worker_lifetime_peak_rss_bytes':int(rss),'text_restoration':text_info,'artifacts':artifacts,
+            'execution':getattr(model,'execution',{'backend':'cpu'}),'network_timings':getattr(model,'last_timings',{})}
 
 
-def worker(connection,cache,threads):
+def worker(connection,cache,threads,backend='cpu'):
     try:
-        started=time.perf_counter();model=MangaLight(cache,threads)
-        connection.send({'status':'loaded','model_load_seconds':time.perf_counter()-started})
+        started=time.perf_counter();model=MangaLight(cache,threads,backend=backend)
+        connection.send({'status':'loaded','model_load_seconds':time.perf_counter()-started,
+                         'execution':getattr(model,'execution',{'backend':backend})})
         while True:
             job=connection.recv()
             if job is None:break
@@ -125,10 +127,10 @@ def worker(connection,cache,threads):
 
 
 class Worker:
-    def __init__(self,cache,threads,timeout):
+    def __init__(self,cache,threads,timeout,backend='cpu'):
         context=multiprocessing.get_context('spawn')
         self.connection,child=context.Pipe();self.timeout=timeout
-        self.process=context.Process(target=worker,args=(child,str(cache),threads),daemon=True)
+        self.process=context.Process(target=worker,args=(child,str(cache),threads,backend),daemon=True)
         self.process.start();child.close()
 
     def receive(self):
@@ -159,11 +161,11 @@ def report(output,manifest):
     results=manifest['results'];images=manifest['images']
     complete=sum(result.get('status')=='complete' for result in results.values())
     records=io.StringIO();writer=csv.writer(records)
-    writer.writerow(['image','status','processing_seconds','inference_seconds','text_method','restored_fraction','error'])
+    writer.writerow(['image','status','processing_seconds','inference_seconds','backend','text_method','restored_fraction','error'])
     rows=[]
     for image in images:
         result=results.get(image['name'],{'status':'pending'});status=result['status']
-        writer.writerow([image['name'],status,result.get('processing_seconds'),result.get('inference_seconds'),
+        writer.writerow([image['name'],status,result.get('processing_seconds'),result.get('inference_seconds'),result.get('execution',{}).get('backend','cpu'),
                          result.get('text_restoration',{}).get('method'),result.get('text_restoration',{}).get('restored_fraction'),result.get('error','')])
         cells=[]
         for key,(_,label) in VARIANTS.items():
@@ -178,6 +180,7 @@ def report(output,manifest):
     content=f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manga Light Colorizer results</title>
 <style>:root{{font:16px system-ui;color-scheme:light dark}}body{{margin:24px}}table{{border-collapse:collapse;width:100%;table-layout:fixed}}th,td{{padding:8px;vertical-align:top;border-bottom:1px solid #8885}}th:first-child{{width:130px;overflow-wrap:anywhere}}img{{width:100%;height:auto;background:white}}p{{line-height:1.5}}.scroll{{overflow:auto}}@media(max-width:900px){{table{{min-width:1100px}}}}</style>
 <h1>Manga Light Colorizer · {complete}/{len(images)} complete</h1>
+<p>Execution backend: <strong>{html.escape(manifest['settings'].get('backend','cpu'))}</strong>. Initial model loading/compilation is measured separately from image tasks.</p>
 <p>Five outputs per page. The recommended version adds original text to the ink-only image. The mask is binary: white pixels come from the source, black pixels keep the ink-only result. Full luminance replacement is the older comparison and can wash out the preferred shading.</p>
 <p>Inference uses a 512 × 512 padded canvas; PNGs recover original dimensions. Reviewed masks are used for known source checksums. Automatic English OCR on new pages can miss text; inspect the mask. Logos, Japanese lettering and oversized effects are outside the reviewed masks.</p>
 <p><a href="manifest.json">Run details and checksums</a> · <a href="metrics.csv">Per-image metrics</a>. Timings include decode, inference, all five variants, PNG saves and validation; model loading is separate.</p>
@@ -205,12 +208,14 @@ def run(args):
         if any(image['sha256'] not in known for image in images):check_ocr(args.ocr_language)
         settings={'version':VERSION,'input_dir':str(input_dir),'size':512,'threads':args.threads,
                   'regions_sha256':sha256(region_file),'ocr_language':args.ocr_language,
-                  'model_manifest_sha256':sha256(ROOT/'assets/model.json')}
+                  'model_manifest_sha256':sha256(ROOT/'assets/model.json'),'backend':args.backend}
         path=output/'manifest.json'
         if path.exists():
             manifest=json.loads(path.read_text())
-            if manifest['settings']!=settings or manifest['images']!=images:
-                raise ValueError('Inputs or pipeline settings changed. Choose a new --output folder.')
+            previous={**manifest['settings'],'backend':manifest['settings'].get('backend','cpu')}
+            if previous!=settings or manifest['images']!=images:
+                raise ValueError('Inputs, backend or pipeline settings changed. Choose a new --output folder.')
+            manifest['settings']=settings
         else:
             if output.exists() and any(output.iterdir()):raise ValueError('Output folder is not an existing pipeline run; choose an empty folder')
             output.mkdir(parents=True,exist_ok=True)
@@ -227,11 +232,17 @@ def run(args):
         manifest['model']=ensure_models(cache,lambda additional=0:check_storage(output,additional,args.min_free_gib))
         manifest['dependencies']={name:importlib.metadata.version(name) for name in ['numpy','pillow','opencv-python-headless','onnxruntime']}
         manifest['python']=platform.python_version()
-        client=Worker(cache,args.threads,args.timeout)
+        if args.backend=='coreml-gpu':
+            import onnxruntime as ort
+            compiled=ROOT/'.cache/coreml'/ort.__version__/sha256(ROOT/'assets/model.json')[:16]/'gpu-rewrite-v1'
+            if not compiled.exists():check_storage(output,2*1024**3,args.min_free_gib)
+            print('Loading Apple GPU backend; first use prepares and compiles cached models.',flush=True)
+        client=Worker(cache,args.threads,args.timeout,args.backend)
         try:
             loaded=client.receive()
             if loaded['status']!='loaded':raise RuntimeError(loaded['error'])
             manifest['model_load_seconds']=loaded['model_load_seconds']
+            manifest['execution']=loaded.get('execution',{'backend':args.backend})
             for index,image in enumerate(images,1):
                 if image not in pending:
                     print(f'[{index}/{len(images)}] skipped verified {image["name"]}',flush=True);continue
@@ -263,6 +274,8 @@ def main():
     parser.add_argument('--regions-file',help='Optional source-checksummed reviewed text regions JSON')
     parser.add_argument('--ocr-language',default='eng',help='Installed Tesseract language; English filtering is currently used')
     parser.add_argument('--threads',type=int,default=4)
+    parser.add_argument('--backend',choices=['cpu','coreml-gpu'],default='cpu',
+                        help='CPU baseline or optimized Apple GPU via Core ML (default: cpu)')
     parser.add_argument('--timeout',type=float,default=1800,help='Model load or complete image worker timeout in seconds')
     parser.add_argument('--min-free-gib',type=float,default=2,
                         help='Free disk reserve after estimated output/download writes, in GiB (default: 2; 0 disables the reserve)')

@@ -9,8 +9,12 @@ flowchart TD
     C --> D["Validate settings + resume hashes"]
     D -->|"Valid outputs"| Z["Existing five folders + report"]
     D -->|"Pending / corrupt pages"| E["Verify/download two pinned ONNX files"]
-    E --> F["One CPU worker; load SAM + generator once"]
-    F --> G["Process pages sequentially"]
+    E --> F["One worker; choose execution backend"]
+    F --> F2{"CPU or Apple GPU?"}
+    F2 -->|CPU| F3["Load original ONNX sessions"]
+    F2 -->|GPU| F4["Specialize and rewrite ONNX; compile/reuse Core ML"]
+    F3 --> G["Process pages sequentially"]
+    F4 --> G
     G --> H["Decode RGB, EXIF orientation, white matte"]
     H --> I["Proportional 512 x 512 white-padded canvas"]
     I --> J["SAM encoder + color generator"]
@@ -46,7 +50,9 @@ flowchart TD
 
 ## Model tensors
 
-`model.py` uses `CPUExecutionProvider`, four intra-op threads, one inter-op thread, sequential execution and disabled session spinning. Both ONNX sessions remain resident between pages. No MPS, MLX, CUDA or diffusion sampler is used.
+`model.py` defaults to `CPUExecutionProvider`, four intra-op threads, one inter-op thread, sequential execution and disabled session spinning. `--backend coreml-gpu` uses specialized ONNX copies and `CoreMLExecutionProvider` with `MLProgram`, static shapes, `CPUAndGPU` compute units and cached compilation. Both networks remain resident between pages. The implementation uses Core ML through ONNX Runtime; no MLX/PyTorch conversion or diffusion sampler is involved.
+
+The acceleration preparation in `accelerate.py` folds static shape calculations, replaces 18 six-dimensional SAM window transpose patterns with equivalent four-dimensional patterns, and replaces six generator `Abs(x)` nodes with `max(x, -x)`. This avoids ONNX CPU partitions between Core ML sections. Original downloaded weights stay unchanged; converted graphs, output hashes and compiled models live under `.cache/`. See [acceleration details](acceleration.md).
 
 1. Convert the padded canvas to float32 grayscale `[0,255]`.
 2. Resize grayscale/255 to 1024 × 1024, repeat across three channels, and pass `[1,3,1024,1024]` to the real SAM encoder.
@@ -83,3 +89,5 @@ The parent holds a project lock, enforces storage limits and supervises a spawne
 The production disk reserve defaults to 2 GiB (`--min-free-gib`), plus estimated bytes for pending writes; it is separate from the model's 300.3 MB of weights. The historical 20 GiB benchmark floor is available as an explicit override. Checks use immediately free filesystem bytes and report measured free space, reserve and estimated writes on failure. macOS purgeable capacity is not counted as immediately free. The reserve is recorded as an operational setting, so changing it does not invalidate existing image results.
 
 Five PNGs are saved atomically, decoded/dimension-checked, hashed, and source checksums checked again. Parent validation confirms outputs before completion. Incomplete or corrupted pages are rerun; complete pages are skipped only when input/settings/output hashes match. Changed inventories/settings require another output folder. Processing timings cover all five saves and validation; model loading is separate. Recorded RSS is the worker's process-lifetime peak and excludes parent/system memory.
+
+The selected backend is an image-processing setting stored in run metadata. Historical runs without a backend field are treated as CPU runs, preserving resume compatibility. Switching CPU/GPU requires another output folder because their results can differ by small floating-point rounding amounts. GPU output is validated for finite values and usable image variation, and explicit GPU initialization failures are surfaced rather than silently reported as accelerated CPU work.

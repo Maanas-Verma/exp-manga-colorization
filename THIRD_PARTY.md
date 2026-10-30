@@ -12,6 +12,8 @@
 
 ONNX files are downloaded directly from the pinned publisher source, verified by size/SHA256, and excluded from Git. `assets/model.json` records their exact provenance.
 
+The optional Apple GPU backend creates local specialized ONNX copies and Core ML compiled caches. They are derived model artifacts, remain subject to the publisher's weight license, and are also excluded from Git.
+
 ## Dependencies and research
 
 ONNX Runtime, NumPy, OpenCV, Pillow and Tesseract retain their upstream licenses; dependency source is not vendored. Python versions are pinned in `requirements.txt`.

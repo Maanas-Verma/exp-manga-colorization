@@ -35,7 +35,7 @@ class PipelineTests(unittest.TestCase):
 
     def args(self,root):
         return SimpleNamespace(input=str(root/'input'),output=str(root/'output/input'),recursive=False,
-                               regions_file=None,ocr_language='eng',threads=4,timeout=1800,min_free_gib=2,force=False)
+                               regions_file=None,ocr_language='eng',threads=4,timeout=1800,min_free_gib=2,backend='cpu',force=False)
 
     def test_five_folders_resume_and_only_corrupt_page_reprocessed(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -62,7 +62,12 @@ class PipelineTests(unittest.TestCase):
                     np.testing.assert_array_equal(restored[selected],original[selected])
                     np.testing.assert_array_equal(restored[~selected],ink[~selected])
                 args.min_free_gib=3
+                legacy=json.loads((output/'manifest.json').read_text())
+                legacy['settings'].pop('backend');(output/'manifest.json').write_text(json.dumps(legacy))
                 self.assertEqual(pipeline.run(args),0);self.assertEqual(len(calls),2)
+                args.backend='coreml-gpu'
+                with self.assertRaisesRegex(ValueError,'backend'):pipeline.run(args)
+                args.backend='cpu'
                 result=manifest['results']['page-0.png'];(output/result['artifacts']['mask']['path']).write_bytes(b'corrupt')
                 self.assertEqual(pipeline.run(args),0);self.assertEqual(calls,['page-0.png','page-1.png','page-0.png'])
                 Path(root/'input/page-0.png').write_bytes(Path(root/'input/page-1.png').read_bytes()+b'changed')

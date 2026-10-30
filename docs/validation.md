@@ -39,3 +39,7 @@ Synthetic worker tests use a small fake colorizer and mock disk availability; th
 ## Cleanup
 
 The working project is about **0.55 GiB locally**, including selected weights, one runtime, user inputs and the five-variant results, compared with about 20 GiB of experiment assets before cleanup. Only source/documentation/research metadata is committed. Removed items include rejected-model weights/environments, installer caches, reference atlases, source archives, historical galleries, redundant trial outputs and the obsolete multi-model runner. Input files were retained unchanged. The cleanup record is [cleanup.json](research/cleanup.json).
+
+## Apple GPU follow-up
+
+The later Core ML extension passed **18 tests, zero skipped**, including exact CPU equivalence of rank-reduced window graphs and rewritten absolute values, explicit GPU availability/fallback handling, and compatibility with historical CPU run manifests. The GPU CLI processed all five research pages with 25 valid PNGs, unchanged source hashes and exact text-mask pixel invariants. Raw output differed from CPU by at most 2/255 per channel. The repeatable `benchmark.py` entry point also completed a two-trial GPU smoke test. See [acceleration measurements and cold-start limits](acceleration.md) and [the detailed record](research/apple-gpu-benchmark.json). The earlier CPU-only measurements above remain historical measurements; GPU conversion/compilation adds local caches beyond the original 0.55 GiB footprint.

@@ -1,6 +1,6 @@
 # Manga Light Colorizer
 
-Colorize a folder of black-and-white manga with **Manga Light Colorizer (model 3)** and produce five separate output folders. Runs locally using ONNX Runtime on CPU; no prompt, colored reference, CUDA, PyTorch or cloud inference is required.
+Colorize a folder of black-and-white manga with **Manga Light Colorizer (model 3)** and produce five separate output folders. Runs locally using ONNX Runtime on CPU or an optimized **Apple GPU backend through Core ML**; no prompt, colored reference, CUDA, PyTorch or cloud inference is required.
 
 Model 3 was selected after assessing 14 candidates on an Apple M1 Pro with 16 GiB RAM. Its raw colors and shading were preferred, and source-text restoration fixes softened dialogue without replacing brightness across the artwork. See the [research and selection record](docs/research.md), [measured results](docs/research/experiments.json) and [pipeline architecture](docs/architecture.md).
 
@@ -18,11 +18,16 @@ brew install tesseract
 # Any folder name, including spaces:
 ./colorize.sh "/path/to/My Manga" --output "/path/to/results"
 
+# Faster Apple Silicon GPU mode; use a separate output for existing CPU runs:
+./colorize.sh input --backend coreml-gpu --output output/input-gpu
+
 # If your default Python is newer than the tested versions:
 PYTHON=python3.11 ./colorize.sh input
 ```
 
-The script creates `.venv`, installs pinned [requirements](requirements.txt) when needed, and downloads only the selected model's two checksum-verified ONNX files into `.cache/models/`. Valid downloads are reused. Inputs are never modified. CPU sessions are loaded once and reused sequentially across pages.
+The script creates `.venv`, installs pinned [requirements](requirements.txt) when needed, and downloads only the selected model's two checksum-verified ONNX files into `.cache/models/`. Valid downloads are reused. Inputs are never modified. Sessions are loaded once and reused sequentially across pages.
+
+The CPU backend remains the default and keeps existing runs compatible. `--backend coreml-gpu` specializes the ONNX graphs and uses Core ML with `CPUAndGPU` compute units. On this M1 Pro, a repeated same-image test improved from **3.05 s to 1.17 s per complete five-output task**, and network inference from **2.38 s to 0.32 s**. First GPU setup took about **46 seconds** to prepare/compile caches; later loads reused them. Cold first-image latency is higher than warm latency. See [measurements, precision and implementation](docs/acceleration.md).
 
 By default, results go to `output/INPUT_FOLDER_NAME/`. Open `report.html` there for the gallery, completion status and links. Every output PNG has the original decoded dimensions.
 
@@ -71,7 +76,7 @@ Inputs/settings must match an existing run to resume; use a new `--output` folde
 
 Inference uses a proportionally resized **512 × 512 white-padded canvas**, then restores original dimensions. This is not native-resolution inference. One isolated CPU worker handles the collection. The default timeout is 30 minutes for model loading and each complete image job; a project lock prevents simultaneous runs. Storage guards preserve a configurable **2 GiB free-disk reserve** after estimated writes and cap project runtime/cache/results at 35 GiB. Input/output directories must be separate without nesting.
 
-The reserve is a buffer for other applications, not model storage or RAM usage. The earlier multi-model benchmark used 20 GiB; that floor was removed from the production default. Use `--min-free-gib 20` to retain it or `--min-free-gib 0` to disable the extra reserve (estimated writes and the project storage cap still apply). Changing the reserve does not invalidate completed pages. On macOS the script measures immediately free filesystem space; Finder/System Settings can show a larger available figure that includes purgeable data. See [Apple's explanation](https://support.apple.com/guide/disk-utility/get-detailed-information-about-a-disk-dskutl1005/mac).
+The reserve is a buffer for other applications, not model storage or RAM usage. The earlier multi-model benchmark used 20 GiB; that floor was removed from the production default. Use `--min-free-gib 20` to retain it or `--min-free-gib 0` to disable the extra reserve (estimated writes and the project storage cap still apply). First GPU compilation also checks 2 GiB of temporary/cache headroom; converted graphs and compiled models are local caches, separate from the original weights. Changing the reserve does not invalidate completed pages. On macOS the script measures immediately free filesystem space; Finder/System Settings can show a larger available figure that includes purgeable data. See [Apple's explanation](https://support.apple.com/guide/disk-utility/get-detailed-information-about-a-disk-dskutl1005/mac).
 
 ## Verification
 
@@ -80,6 +85,14 @@ The reserve is a buffer for other applications, not model storage or RAM usage. 
 ```
 
 Tests use synthetic images to cover decoding, proportions, text/ink preservation, output hashes, filename collisions, reviewed regions, timeout handling and selective resume. Actual inference was separately verified on all five research pages; see [validation](docs/validation.md). Final-script timings include all five outputs and validation, and differ from the original benchmark.
+
+To benchmark one of your own images on both backends, including all five variant saves:
+
+```sh
+.venv/bin/python benchmark.py "input/1194-005.png"
+```
+
+This runs one cold task and three warm repeats per backend, sequentially, and saves results under `.cache/benchmark-runs/`. On systems without Core ML use `--backends cpu`. Extra OCR on unreviewed pages also contributes to task time.
 
 ## License and attribution
 

@@ -91,6 +91,18 @@ def process_image(model,job):
     canvas,box=letterbox(original,512)
     inference_started=time.perf_counter();prediction=model.predict(canvas)
     inference_seconds=time.perf_counter()-inference_started
+    result=finish_image_outputs(job,original,format_name,canvas,box,prediction)
+    rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    if platform.system()!='Darwin':rss*=1024
+    result.update(inference_seconds=inference_seconds,processing_seconds=time.perf_counter()-started,
+                  worker_lifetime_peak_rss_bytes=int(rss),
+                  execution=getattr(model,'execution',{'backend':'cpu'}),
+                  network_timings=getattr(model,'last_timings',{}))
+    return result
+
+
+def finish_image_outputs(job,original,format_name,canvas,box,prediction):
+    """Save and validate the five standard variants after a network prediction."""
     validate_prediction(canvas,prediction)
     raw=restore_size(prediction,box,original.size);ink=retain_ink(original,raw)
     restored,mask,text_info=restore_text(original,ink,raw,job['regions'],job['language'])
@@ -101,15 +113,10 @@ def process_image(model,job):
         relative=Path(VARIANTS[key][0])/job['output_name'];destination=Path(job['output'])/relative
         save_png(image,destination)
         artifacts[key]={'path':relative.as_posix(),'sha256':sha256(destination)}
-    if sha256(source)!=job['sha256']:raise ValueError('Input changed during processing')
-    rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    if platform.system()!='Darwin':rss*=1024
+    if sha256(Path(job['path']))!=job['sha256']:raise ValueError('Input changed during processing')
     return {'status':'complete','input_sha256':job['sha256'],'original_size':list(original.size),
             'input_format':format_name,'inference_canvas':[512,512],'content_box':list(box),
-            'inference_seconds':inference_seconds,'processing_seconds':time.perf_counter()-started,
-            'worker_lifetime_peak_rss_bytes':int(rss),'text_restoration':text_info,'artifacts':artifacts,
-            'execution':getattr(model,'execution',{'backend':'cpu'}),'network_timings':getattr(model,'last_timings',{}),
-            'memory':memory_snapshot()}
+            'text_restoration':text_info,'artifacts':artifacts,'memory':memory_snapshot()}
 
 
 def worker(connection,cache,threads,backend='cpu'):

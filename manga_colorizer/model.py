@@ -45,10 +45,11 @@ def ensure_models(cache, check_storage):
 
 
 class MangaLight:
-    def __init__(self, cache, threads=4, backend='cpu', profile_dir=None):
+    def __init__(self, cache, threads=4, backend='cpu', profile_dir=None,batch_size=1):
         import onnxruntime as ort
         if backend not in ('cpu','coreml-gpu'):
             raise ValueError(f'Unknown execution backend: {backend}')
+        if batch_size not in (1,2,4):raise ValueError('Supported tensor batches are 1, 2 and 4')
         if backend!='cpu' and 'CoreMLExecutionProvider' not in ort.get_available_providers():
             raise RuntimeError('This ONNX Runtime installation does not include CoreMLExecutionProvider; use --backend cpu')
         options = ort.SessionOptions()
@@ -60,16 +61,17 @@ class MangaLight:
         cache = Path(cache)
         models=cache;optimization=None
         providers=['CPUExecutionProvider']
-        self.backend=backend;self.last_timings={}
+        self.backend=backend;self.last_timings={};self.batch_size=batch_size
         if backend!='cpu':
             from .accelerate import FIXED_DIMENSIONS,prepare_coreml_models
-            models,optimization=prepare_coreml_models(cache)
+            models,optimization=prepare_coreml_models(cache,batch_size)
             units='CPUAndGPU'
             # Our canvas and SAM feature contract are fixed; specialize dynamic
             # ONNX dimensions so Core ML can compile efficient static graphs.
-            for name,size in FIXED_DIMENSIONS.items():
+            for name,size in {**FIXED_DIMENSIONS,'batch':batch_size}.items():
                 options.add_free_dimension_override_by_name(name,size)
             compiled=cache.parent/'coreml'/ort.__version__/sha256(ROOT/'assets/model.json')[:16]/'gpu-rewrite-v1'
+            if batch_size!=1:compiled=compiled/f'batch-{batch_size}'
             compiled.mkdir(parents=True,exist_ok=True)
             providers=[('CoreMLExecutionProvider',{'ModelFormat':'MLProgram','MLComputeUnits':units,
                 'RequireStaticInputShapes':'1','EnableOnSubgraphs':'0','ModelCacheDirectory':str(compiled),
@@ -86,14 +88,20 @@ class MangaLight:
             return result
         self.generator=session('v6_generator.onnx')
         self.sam=session('v6_sam_encoder.onnx')
-        self.execution={'backend':backend,'onnxruntime':ort.__version__,
+        self.execution={'backend':backend,'onnxruntime':ort.__version__,'batch_size':batch_size,
                         'generator_providers':self.generator.get_providers(),'sam_providers':self.sam.get_providers()}
         if optimization:self.execution['graph_optimization']=optimization['changes']
 
     def predict(self, canvas):
-        gray = np.asarray(canvas.convert('L'), dtype=np.float32)
-        sam_gray = cv2.resize(gray/255, (1024,1024), interpolation=cv2.INTER_LINEAR)
-        sam_input = np.repeat(sam_gray[None,None], 3, axis=1).astype(np.float32)
+        if self.batch_size!=1:raise ValueError('Use predict_batch for a model with batch size above 1')
+        return self.predict_batch([canvas])[0]
+
+    def predict_batch(self,canvases):
+        if len(canvases)!=self.batch_size:raise ValueError('Number of canvases does not match the compiled tensor batch')
+        if len({canvas.size for canvas in canvases})!=1:raise ValueError('Batch canvases must have identical dimensions')
+        gray = np.stack([np.asarray(canvas.convert('L'),dtype=np.float32) for canvas in canvases])
+        sam_gray = np.stack([cv2.resize(page/255,(1024,1024),interpolation=cv2.INTER_LINEAR) for page in gray])
+        sam_input = np.repeat(sam_gray[:,None], 3, axis=1).astype(np.float32)
         sam_started=time.perf_counter()
         sam_outputs = self.sam.run(None, {self.sam.get_inputs()[0].name:sam_input})
         sam_seconds=time.perf_counter()-sam_started
@@ -101,12 +109,13 @@ class MangaLight:
             raise ValueError('SAM encoder returned non-finite features')
         generator_started=time.perf_counter()
         output = self.generator.run(None, {
-            'L_bw': (gray/127.5-1)[None,None].astype(np.float32),
+            'L_bw': (gray/127.5-1)[:,None].astype(np.float32),
             'sam_level0':sam_outputs[0], 'sam_level1':sam_outputs[1],
-            'wd14_embedding':np.zeros((1,1024), np.float32),
+            'wd14_embedding':np.zeros((self.batch_size,1024), np.float32),
         })[0]
         self.last_timings={'sam_seconds':sam_seconds,'generator_seconds':time.perf_counter()-generator_started}
-        if output.shape != (1,3,canvas.height,canvas.width) or not np.isfinite(output).all():
+        width,height=canvases[0].size
+        if output.shape != (self.batch_size,3,height,width) or not np.isfinite(output).all():
             raise ValueError(f'Invalid RGB prediction: {output.shape}')
-        rgb = (output[0].transpose(1,2,0)+1)/2
-        return Image.fromarray(np.clip(np.round(rgb*255), 0,255).astype(np.uint8))
+        rgb = (output.transpose(0,2,3,1)+1)/2
+        return [Image.fromarray(page) for page in np.clip(np.round(rgb*255),0,255).astype(np.uint8)]

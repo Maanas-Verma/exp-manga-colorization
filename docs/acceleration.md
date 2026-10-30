@@ -53,7 +53,7 @@ The optimized models profiled as **one Core ML section per network**, with no in
 
 - Original downloads remain pinned/checksum-verified in `.cache/models/` and are never modified.
 - `accelerate.py` prepares local static ONNX copies in `.cache/coreml-onnx/`, keyed by source manifest and rewrite version.
-- Input dimensions are fixed to this pipeline's contract: batch 1, 512 × 512 generator canvas, 1024 × 1024 SAM input, and 64²/32² SAM features.
+- Production input dimensions are fixed to batch 1, a 512 × 512 generator canvas, a 1024 × 1024 SAM input, and 64²/32² SAM features. The experimental tensor-batch benchmark specializes separate graphs/caches for batches 2 and 4; [measurements](memory-and-batching.md#real-tensor-batches-1-2-and-4) favored batch 1 on this M1 Pro.
 - Core ML uses `MLProgram`, `CPUAndGPU`, static input shapes, and compiled caching under `.cache/coreml/`. Lower-precision GPU accumulation is disabled.
 - `CPUAndGPU` allows Apple's runtime to place operations on CPU/GPU; it does not mean every instruction is guaranteed to run on the GPU. The profiler confirms Core ML execution rather than ONNX CPU fallback. Neural Engine is not selected by this mode.
 - Missing Core ML support and provider initialization failure produce an explicit error. Python's automatic provider retry is disabled for GPU sessions so a runtime GPU error cannot silently switch the session to CPU. CPU is available explicitly with `--backend cpu`.

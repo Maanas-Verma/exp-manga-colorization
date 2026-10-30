@@ -65,15 +65,18 @@ def rewrite_graph(model):
     return {'rank_six_windows_rewritten':windows,'absolute_values_rewritten':absolute_values}
 
 
-def prepare_coreml_models(cache):
+def prepare_coreml_models(cache,batch_size=1):
     import onnx
     import onnxruntime as ort
     cache=Path(cache)
+    if batch_size not in (1,2,4):raise ValueError('Supported experimental tensor batches are 1, 2 and 4')
     destination=cache.parent/'coreml-onnx'/f'v{REWRITE_VERSION}'/sha256(ROOT/'assets/model.json')[:16]
+    if batch_size!=1:destination=destination/f'batch-{batch_size}'
     destination.mkdir(parents=True,exist_ok=True);record=destination/'conversion.json'
     specification=json.loads((ROOT/'assets/model.json').read_text())
     expected={'rewrite_version':REWRITE_VERSION,'onnxruntime':ort.__version__,
               'source_sha256':{Path(item['path']).name:item['sha256'] for item in specification['files']}}
+    if batch_size!=1:expected['batch_size']=batch_size
     if record.exists():
         metadata=json.loads(record.read_text())
         if metadata.get('settings')==expected and all((destination/name).exists() and sha256(destination/name)==digest for name,digest in metadata.get('output_sha256',{}).items()) and len(metadata.get('output_sha256',{}))==2:
@@ -87,7 +90,7 @@ def prepare_coreml_models(cache):
         options=ort.SessionOptions();options.intra_op_num_threads=4
         options.graph_optimization_level=ort.GraphOptimizationLevel.ORT_ENABLE_BASIC
         options.log_severity_level=3;options.optimized_model_filepath=str(basic)
-        for key,value in FIXED_DIMENSIONS.items():options.add_free_dimension_override_by_name(key,value)
+        for key,value in {**FIXED_DIMENSIONS,'batch':batch_size}.items():options.add_free_dimension_override_by_name(key,value)
         session=ort.InferenceSession(str(source),options,providers=['CPUExecutionProvider']);del session
         try:
             model=onnx.shape_inference.infer_shapes(onnx.load(basic))

@@ -96,6 +96,14 @@ To benchmark one of your own images on both backends, including all five variant
 
 This runs one cold task and three warm repeats per backend, sequentially, and saves results under `.cache/benchmark-runs/`. On systems without Core ML use `--backends cpu`. Extra OCR on unreviewed pages also contributes to task time.
 
+Real tensor batches of 2 and 4 are available through the experimental benchmark:
+
+```sh
+.venv/bin/python benchmark_batches.py "0" --pages 24
+```
+
+On this 16 GiB M1 Pro, two 24-page runs per setting measured **37.84 / 31.73 / 26.60 pages/minute** for batches **1 / 2 / 4**, including OCR, five saves and worker reloads. Peak sampled process-tree footprint was **3.47 / 4.33 / 4.82 GiB**. Batch 1 remains the production setting. See [test method, variability and validation](docs/memory-and-batching.md#real-tensor-batches-1-2-and-4).
+
 ## License and attribution
 
 Pipeline code is GPL-3.0; see [LICENSE](LICENSE) and [third-party attribution](THIRD_PARTY.md). Model weights come from [sharky172/manga-light-colorizer](https://huggingface.co/sharky172/manga-light-colorizer) under the publisher's **CC BY-NC-SA 4.0** license. Weights, input manga pages, generated images, environments and caches are excluded from Git. This public repository contains code, region coordinates, documentation and compact research records.

@@ -2,6 +2,8 @@
 /.cache/
 /.venv/
 /output/
+/0/
+/chapters/
 /input/*
 !/input/.gitkeep
 __pycache__/

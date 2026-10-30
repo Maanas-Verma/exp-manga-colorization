@@ -1,0 +1,16 @@
+{
+  "repo": "sharky172/manga-light-colorizer",
+  "revision": "2fb022c4ce55632b7671a1df306f63984928e36a",
+  "files": [
+    {
+      "path": "models/v6_generator.onnx",
+      "size": 191335312,
+      "sha256": "48284fcf0b7a606270702630f559af88eecf95bc6cdec1ff8bce8663d12b4bb6"
+    },
+    {
+      "path": "models/v6_sam_encoder.onnx",
+      "size": 108983556,
+      "sha256": "97c4cad5814e1fb12c13d1b23d3969dd9e2fce92d818539fe7db575140333a34"
+    }
+  ]
+}

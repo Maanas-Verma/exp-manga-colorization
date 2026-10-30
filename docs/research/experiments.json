@@ -1,0 +1,617 @@
+{
+  "recorded_on": "2026-10-30",
+  "host": {
+    "chip": "Apple M1 Pro",
+    "unified_memory_gib": 16
+  },
+  "inference_canvas": [
+    512,
+    512
+  ],
+  "single_image": "1194-005.png",
+  "single_image_runs": [
+    {
+      "run": "20261029T142321.755101Z",
+      "results": [
+        {
+          "model": 1,
+          "name": "Manga Colorization v2 INT8",
+          "status": "complete",
+          "warm_median_seconds": 1.1219525829947088,
+          "cold_completion_seconds": 1.9438227920036297,
+          "model_loading_seconds": 0.3157667079940438,
+          "peak_rss_bytes": 1212399616,
+          "mlx_peak_bytes": null,
+          "fidelity": "Panel layout and faces retained; fine text softened at 512 px and some lettering tinted.",
+          "color_quality": "Broad, vivid fills; Zoro hair green. Sommers hair guessed yellow-green instead of official orange; some bleed and warm skin casts.",
+          "reason": ""
+        },
+        {
+          "model": 2,
+          "name": "Manga Colorization v2 FP16",
+          "status": "complete",
+          "warm_median_seconds": 2.304654208011925,
+          "cold_completion_seconds": 2.7066237090039067,
+          "model_loading_seconds": 0.23304150000330992,
+          "peak_rss_bytes": 1407778816,
+          "mlx_peak_bytes": null,
+          "fidelity": "Very similar structure and text preservation to INT8; fine text remains soft.",
+          "color_quality": "Nearly the same palette as INT8; no clear visual gain in this sample despite longer runtime.",
+          "reason": ""
+        },
+        {
+          "model": 3,
+          "name": "Manga Light Colorizer",
+          "status": "complete",
+          "warm_median_seconds": 2.661556000006385,
+          "cold_completion_seconds": 3.4450689580116887,
+          "model_loading_seconds": 0.5649027920153458,
+          "peak_rss_bytes": 2389196800,
+          "mlx_peak_bytes": null,
+          "fidelity": "Layout and faces retained; stronger overall shading darkens some background and dialogue areas.",
+          "color_quality": "Most coherent and complete coloring among the first five; Zoro hair green, warm hair tones for Sommers, muted cinematic palette.",
+          "reason": ""
+        },
+        {
+          "model": 4,
+          "name": "DDColor Tiny",
+          "status": "complete",
+          "warm_median_seconds": 1.1357884169847239,
+          "cold_completion_seconds": 4.3323767079855315,
+          "model_loading_seconds": 2.81831437497749,
+          "peak_rss_bytes": 2486779904,
+          "mlx_peak_bytes": null,
+          "fidelity": "Original geometry recognizable; much of the page remains white, with colored text and strokes.",
+          "color_quality": "Sparse yellow/orange edge coloring rather than clean filled regions; weak manga result.",
+          "reason": ""
+        },
+        {
+          "model": 5,
+          "name": "DDColor Artistic",
+          "status": "complete",
+          "warm_median_seconds": 2.469247583008837,
+          "cold_completion_seconds": 8.652546666009584,
+          "model_loading_seconds": 5.449569082993548,
+          "peak_rss_bytes": 3204005888,
+          "mlx_peak_bytes": null,
+          "fidelity": "Geometry recognizable; mostly monochrome interiors and colored contours.",
+          "color_quality": "Limited fill coverage with scattered green/orange hues; weak result on this manga page.",
+          "reason": ""
+        },
+        {
+          "model": 7,
+          "name": "FLUX.2 Klein 4B MLX 4-bit",
+          "status": "complete",
+          "warm_median_seconds": 23.692521332995966,
+          "cold_completion_seconds": 35.375052624964155,
+          "model_loading_seconds": 3.243529707979178,
+          "peak_rss_bytes": 1767473152,
+          "mlx_peak_bytes": 4509236438,
+          "fidelity": "Panels roughly retained, but text is regenerated and often illegible; faces, hair and fine details change.",
+          "color_quality": "Rich saturated cel colors and broad coverage; inconsistent character palettes, including orange Zoro hair. Slower than direct colorizers.",
+          "reason": ""
+        },
+        {
+          "model": 10,
+          "name": "BasicPBC-Light",
+          "status": "complete",
+          "warm_median_seconds": 2.89659787499113,
+          "cold_completion_seconds": 31.747416915983194,
+          "model_loading_seconds": 28.256339082989143,
+          "peak_rss_bytes": 2102394880,
+          "mlx_peak_bytes": null,
+          "fidelity": "Region filling retains the line geometry, but dark fills in speech bubbles harm readability.",
+          "color_quality": "Large flat green/red/skin-colored regions, many missed or merged regions. Poor full-page result with this derived reference atlas and segmentation.",
+          "reason": ""
+        },
+        {
+          "model": 11,
+          "name": "BasicPBC-Ref",
+          "status": "complete",
+          "warm_median_seconds": 2.6159849999821745,
+          "cold_completion_seconds": 5.521197333029704,
+          "model_loading_seconds": 2.2632268329907674,
+          "peak_rss_bytes": 3147874304,
+          "mlx_peak_bytes": null,
+          "fidelity": "Geometry retained but broad dark regions affect dialogue and faces; much of the page stays uncolored.",
+          "color_quality": "Sparse flat fills and incorrect region matching. Experimental coarse semantic hints and derived reference line art limit this trial.",
+          "reason": ""
+        },
+        {
+          "model": 12,
+          "name": "DACoN v1.1",
+          "status": "complete",
+          "warm_median_seconds": 8.302833166992059,
+          "cold_completion_seconds": 21.52949145899038,
+          "model_loading_seconds": 8.464856834005332,
+          "peak_rss_bytes": 5531172864,
+          "mlx_peak_bytes": null,
+          "fidelity": "Original geometry retained; dark or saturated fills obscure some dialogue and details.",
+          "color_quality": "Patchy orange/black/purple region fills with missed areas. Reference/segmentation preparation dominates; this is not a clean-character benchmark.",
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "run": "20261029T152259.084249Z",
+      "results": [
+        {
+          "model": 1,
+          "name": "Manga Colorization v2 INT8",
+          "status": "complete",
+          "warm_median_seconds": 1.1219525829947088,
+          "cold_completion_seconds": 1.9438227920036297,
+          "queue_wait_seconds": 0,
+          "model_loading_seconds": 0.3157667079940438,
+          "peak_rss_bytes": 1212399616,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Panel layout and faces retained; fine text softened at 512 px and some lettering tinted.",
+          "color_quality": "Broad, vivid fills; Zoro hair green. Sommers hair guessed yellow-green instead of official orange; some bleed and warm skin casts.",
+          "reason": ""
+        },
+        {
+          "model": 2,
+          "name": "Manga Colorization v2 FP16",
+          "status": "complete",
+          "warm_median_seconds": 2.304654208011925,
+          "cold_completion_seconds": 2.7066237090039067,
+          "queue_wait_seconds": 0,
+          "model_loading_seconds": 0.23304150000330992,
+          "peak_rss_bytes": 1407778816,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Very similar structure and text preservation to INT8; fine text remains soft.",
+          "color_quality": "Nearly the same palette as INT8; no clear visual gain in this sample despite longer runtime.",
+          "reason": ""
+        },
+        {
+          "model": 3,
+          "name": "Manga Light Colorizer",
+          "status": "complete",
+          "warm_median_seconds": 2.661556000006385,
+          "cold_completion_seconds": 3.4450689580116887,
+          "queue_wait_seconds": 0,
+          "model_loading_seconds": 0.5649027920153458,
+          "peak_rss_bytes": 2389196800,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Raw layout and shading retained; original dark ink/text restored in the refined variant. Fine lines are stronger than raw.",
+          "color_quality": "Preferred raw palette and shading preserved. Pixels outside the source ink mask are unchanged; the earlier global-luminance washout is avoided.",
+          "reason": ""
+        },
+        {
+          "model": 6,
+          "name": "SD 1.5 + Anime Lineart ControlNet",
+          "status": "complete",
+          "warm_median_seconds": 19.358329959010007,
+          "cold_completion_seconds": 27.33990495899343,
+          "queue_wait_seconds": 0,
+          "model_loading_seconds": 6.893974457983859,
+          "peak_rss_bytes": 593444864,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": 6009028608,
+          "fidelity": "Panel layout broadly follows the source, but faces/ink are softened and dialogue becomes unreadable pseudo-text at these settings.",
+          "color_quality": "Mostly monochrome with small magenta text accents; little useful color at control scale 1.0 and img2img strength 0.65.",
+          "reason": ""
+        },
+        {
+          "model": 7,
+          "name": "FLUX.2 Klein 4B MLX 4-bit",
+          "status": "complete",
+          "warm_median_seconds": 23.692521332995966,
+          "cold_completion_seconds": 35.375052624964155,
+          "queue_wait_seconds": 0,
+          "model_loading_seconds": 3.243529707979178,
+          "peak_rss_bytes": 1767473152,
+          "mlx_peak_bytes": 4509236438,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Panels roughly retained, but text is regenerated and often illegible; faces, hair and fine details change.",
+          "color_quality": "Rich saturated cel colors and broad coverage; inconsistent character palettes, including orange Zoro hair. Slower than direct colorizers.",
+          "reason": ""
+        },
+        {
+          "model": 8,
+          "name": "FLUX 3 Image Klein MLX 6-bit",
+          "status": "complete",
+          "warm_median_seconds": 158.44438483400154,
+          "cold_completion_seconds": 155.91463220800506,
+          "queue_wait_seconds": 1.8207996618002653e-05,
+          "model_loading_seconds": 0.21608729101717472,
+          "peak_rss_bytes": 988184576,
+          "mlx_peak_bytes": 9444449968,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Page structure follows the source and much dialogue remains recognizable; small text, facial details and ink are regenerated.",
+          "color_quality": "Flat beige/red palette, misplaced green/red accents and inconsistent character colors. Less coherent than model 3 raw on this page.",
+          "reason": ""
+        },
+        {
+          "model": 9,
+          "name": "MangaNinja Core ML",
+          "status": "invalid_output",
+          "warm_median_seconds": null,
+          "cold_completion_seconds": null,
+          "queue_wait_seconds": 66.73042995898868,
+          "model_loading_seconds": 26.57731516700005,
+          "peak_rss_bytes": null,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Unusable: every raw trial is a constant black image.",
+          "color_quality": "No usable color prediction; the luminance variant only reproduces the monochrome page.",
+          "reason": "GPU FP16 reference features and conditional ControlNet residuals became non-finite; all four raw outputs were black. CPU-only diagnostics remained finite through early steps but were slow. CPU/Neural Engine fallback stopped at the 20 GiB free-disk floor. No usable completed color output in these trials."
+        },
+        {
+          "model": 13,
+          "name": "ColorizeDiffusion v1.5",
+          "status": "complete",
+          "warm_median_seconds": 26.781258541013813,
+          "cold_completion_seconds": 66.42103670802317,
+          "queue_wait_seconds": 2.2374995751306415e-05,
+          "model_loading_seconds": 31.433015167014673,
+          "peak_rss_bytes": 4000727040,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": 3439247360,
+          "fidelity": "Poor at these settings: faces and thin linework change, dialogue is distorted, and speech bubbles acquire color.",
+          "color_quality": "Vivid colors, but large green/yellow fills and inconsistent character colors. Experimental MPS port; parity with author CUDA inference is unverified.",
+          "reason": ""
+        },
+        {
+          "model": 14,
+          "name": "MangaDiT",
+          "status": "blocked",
+          "warm_median_seconds": null,
+          "cold_completion_seconds": null,
+          "queue_wait_seconds": 0,
+          "model_loading_seconds": null,
+          "peak_rss_bytes": null,
+          "mlx_peak_bytes": null,
+          "mps_driver_observed_bytes": null,
+          "fidelity": "Pending visual review",
+          "color_quality": "Pending visual review",
+          "reason": "RuntimeError: MangaDiT blocked at preflight: standard transformer 23.80 GB exceeds 16 GiB RAM; full standard stack 33.74 GB. Author's custom attention has no validated quantized Mac route. Evidence saved in .bench/models/14/preflight.json"
+        }
+      ]
+    }
+  ],
+  "batch": {
+    "metrics": {
+      "total_jobs": 20,
+      "completed_jobs": 20,
+      "failed_jobs": 0,
+      "remaining_jobs": 0,
+      "completion_percent": 100.0,
+      "elapsed_wall_seconds": 217.32117676734924,
+      "processing_seconds": 157.73471537904697,
+      "models": {
+        "1": {
+          "name": "Manga Colorization v2 INT8",
+          "completed": 5,
+          "total": 5,
+          "processing_seconds": 6.1737936670542695,
+          "median_seconds_per_image": 1.237258583016228,
+          "initial_model_load_seconds": 0.3322610420000274,
+          "peak_worker_rss_bytes": 1343340544,
+          "mlx_peak_bytes": null
+        },
+        "2": {
+          "name": "Manga Colorization v2 FP16",
+          "completed": 5,
+          "total": 5,
+          "processing_seconds": 11.588916000997415,
+          "median_seconds_per_image": 2.3255119580135215,
+          "initial_model_load_seconds": 0.22831037497962825,
+          "peak_worker_rss_bytes": 1520549888,
+          "mlx_peak_bytes": null
+        },
+        "3": {
+          "name": "Manga Light Colorizer",
+          "completed": 5,
+          "total": 5,
+          "processing_seconds": 13.899774294026429,
+          "median_seconds_per_image": 2.853037624998251,
+          "initial_model_load_seconds": 0.5755597079987638,
+          "peak_worker_rss_bytes": 2694987776,
+          "mlx_peak_bytes": null
+        },
+        "7": {
+          "name": "FLUX.2 Klein 4B MLX 4-bit",
+          "completed": 5,
+          "total": 5,
+          "processing_seconds": 126.07223141696886,
+          "median_seconds_per_image": 24.651304375001928,
+          "initial_model_load_seconds": 1.9665416250063572,
+          "peak_worker_rss_bytes": 1584381952,
+          "mlx_peak_bytes": 4766863886
+        }
+      },
+      "posthoc_text_restoration_seconds": 2.49572108394932,
+      "timing_notes": "Processing/inference time is measured inside the worker. Inclusive elapsed job time is available only when a worker start timestamp was captured; missing values are unavailable, not zero."
+    },
+    "images": [
+      {
+        "name": "1194-001.png",
+        "size": [
+          1100,
+          1606
+        ],
+        "sha256": "b8458f056478e672cd10ea9c66409cbb109e84efc450eb62214eb7551d7d80a9"
+      },
+      {
+        "name": "1194-003.png",
+        "size": [
+          1100,
+          1606
+        ],
+        "sha256": "dd7791233b75063a700bdcaf2d8c71c03fbb97c0157102551d49d421f0d1f671"
+      },
+      {
+        "name": "1194-004.png",
+        "size": [
+          1200,
+          1753
+        ],
+        "sha256": "d42351ba0e18ee4cc803b57a8037097051d6b0817f456eeabc1fb0671d57026f"
+      },
+      {
+        "name": "1194-005.png",
+        "size": [
+          1100,
+          1606
+        ],
+        "sha256": "80e69d531efc0c887c2bca8576d67595b3541bf7d53acb0adca8801c3e8b646b"
+      },
+      {
+        "name": "1194-006.png",
+        "size": [
+          1100,
+          1606
+        ],
+        "sha256": "f0feb9f65111c1e4056c4f91a1daf7648ce7f872f24b2cc771de990bef9c39d5"
+      }
+    ],
+    "jobs": [
+      {
+        "model": 1,
+        "image": "1194-001.png",
+        "status": "complete",
+        "seconds": 1.294377042009728,
+        "inference_seconds": 0.931663875002414,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 1,
+        "image": "1194-003.png",
+        "status": "complete",
+        "seconds": 1.2937688340025488,
+        "inference_seconds": 1.0398593749850988,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 1,
+        "image": "1194-004.png",
+        "status": "complete",
+        "seconds": 1.237258583016228,
+        "inference_seconds": 0.9145991659897845,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 1,
+        "image": "1194-005.png",
+        "status": "complete",
+        "seconds": 1.134677250025561,
+        "inference_seconds": 0.8956048749969341,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 1,
+        "image": "1194-006.png",
+        "status": "complete",
+        "seconds": 1.2137119580002036,
+        "inference_seconds": 0.9757598750002217,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 2,
+        "image": "1194-001.png",
+        "status": "complete",
+        "seconds": 2.355544166988693,
+        "inference_seconds": 2.027953790995525,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 2,
+        "image": "1194-003.png",
+        "status": "complete",
+        "seconds": 2.3255119580135215,
+        "inference_seconds": 2.082579292007722,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 2,
+        "image": "1194-004.png",
+        "status": "complete",
+        "seconds": 2.3621821670094505,
+        "inference_seconds": 2.0186453750065994,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 2,
+        "image": "1194-005.png",
+        "status": "complete",
+        "seconds": 2.2890005839872174,
+        "inference_seconds": 2.027287915989291,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 2,
+        "image": "1194-006.png",
+        "status": "complete",
+        "seconds": 2.2566771249985322,
+        "inference_seconds": 2.0095584169903304,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 3,
+        "image": "1194-001.png",
+        "status": "complete",
+        "seconds": 2.9107365839881822,
+        "inference_seconds": 2.4213082079950254,
+        "elapsed_seconds": null,
+        "variant": "text_restored",
+        "text_restoration_seconds": 0.46596466697519645
+      },
+      {
+        "model": 3,
+        "image": "1194-003.png",
+        "status": "complete",
+        "seconds": 2.885253709013341,
+        "inference_seconds": 2.482870916981483,
+        "elapsed_seconds": null,
+        "variant": "text_restored",
+        "text_restoration_seconds": 0.47868854098487645
+      },
+      {
+        "model": 3,
+        "image": "1194-004.png",
+        "status": "complete",
+        "seconds": 2.853037624998251,
+        "inference_seconds": 2.359660707996227,
+        "elapsed_seconds": null,
+        "variant": "text_restored",
+        "text_restoration_seconds": 0.5937885839957744
+      },
+      {
+        "model": 3,
+        "image": "1194-005.png",
+        "status": "complete",
+        "seconds": 2.6208392920088954,
+        "inference_seconds": 2.236440084001515,
+        "elapsed_seconds": null,
+        "variant": "text_restored",
+        "text_restoration_seconds": 0.4816912090172991
+      },
+      {
+        "model": 3,
+        "image": "1194-006.png",
+        "status": "complete",
+        "seconds": 2.629907084017759,
+        "inference_seconds": 2.248984375008149,
+        "elapsed_seconds": null,
+        "variant": "text_restored",
+        "text_restoration_seconds": 0.4755880829761736
+      },
+      {
+        "model": 7,
+        "image": "1194-001.png",
+        "status": "complete",
+        "seconds": 22.917535332991974,
+        "inference_seconds": 22.51604629101348,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 7,
+        "image": "1194-003.png",
+        "status": "complete",
+        "seconds": 23.299360459001036,
+        "inference_seconds": 23.00845004201983,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 7,
+        "image": "1194-004.png",
+        "status": "complete",
+        "seconds": 24.651304375001928,
+        "inference_seconds": 24.276750958000775,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 7,
+        "image": "1194-005.png",
+        "status": "complete",
+        "seconds": 26.001383208989864,
+        "inference_seconds": 25.60884562501451,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      },
+      {
+        "model": 7,
+        "image": "1194-006.png",
+        "status": "complete",
+        "seconds": 29.20264804098406,
+        "inference_seconds": 28.900615666003432,
+        "elapsed_seconds": null,
+        "variant": "raw",
+        "text_restoration_seconds": null
+      }
+    ]
+  },
+  "verification": {
+    "jobs_complete": 20,
+    "jobs_total": 20,
+    "variant_images_validated": 45,
+    "final_exports_validated": 20,
+    "input_hashes_unchanged": 5,
+    "zip_files_verified": 20,
+    "local_links_verified": 133,
+    "model_3_ink_and_non_ink_invariants_verified": 5,
+    "free_gib": 28.177345275878906,
+    "benchmark_gib": 19.643506716005504,
+    "http_status": 200,
+    "tests_passed": 16,
+    "inclusive_elapsed_timing": "Unavailable for this batch; worker processing/inference timings and batch wall time are measured.",
+    "model_3_ink_links_verified_via_http": 5,
+    "model_3_older_luminance_links_verified_via_http": 5,
+    "color_variant_images_validated": 50,
+    "mask_images_validated": 10,
+    "model_3_text_links_verified_via_http": 5,
+    "model_3_text_pixel_invariants_verified": 5,
+    "other_model_jobs_unchanged": 15,
+    "original_inference_and_processing_timings_preserved": 20,
+    "tests_skipped": 2,
+    "skipped_tests": "Unrelated torch research adapters need their isolated runtime"
+  },
+  "text_restoration_verification": {
+    "timestamp": "2026-10-29T22:00:19.791133+00:00",
+    "model_3_images": 5,
+    "source_hashes_unchanged": 5,
+    "baseline_variant_hashes_unchanged": 15,
+    "selected_pixels_exact_source": 5,
+    "outside_mask_exact_prior_ink": 5,
+    "additional_processing_seconds": 2.49572108394932,
+    "region_counts": {
+      "1194-001.png": 3,
+      "1194-003.png": 11,
+      "1194-004.png": 7,
+      "1194-005.png": 13,
+      "1194-006.png": 8
+    },
+    "other_model_jobs_unchanged": true
+  }
+}

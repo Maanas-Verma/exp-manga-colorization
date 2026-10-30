@@ -1,0 +1,710 @@
+[
+  {
+    "number": 1,
+    "name": "Manga Colorization v2 INT8",
+    "size": "32.5 MB",
+    "runtime": "ONNX Runtime CPU",
+    "profile": "onnx",
+    "adapter": "v2_int8",
+    "repo": "lookx2/manga-colorization",
+    "files": [
+      "manga-colorizer-int8.onnx"
+    ],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "lookx2/manga-colorization",
+        "revision": "9b421e3e89598aa3563be53f94cfd58b65b49702",
+        "files": [
+          {
+            "path": "manga-colorizer-int8.onnx",
+            "size": 32536990,
+            "sha256": "cbf5f19c289107f37de2add52b03c6ed713800a33ac2baf80ad3188c22c152f3"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 2,
+    "name": "Manga Colorization v2 FP16",
+    "size": "61.7 MB",
+    "runtime": "ONNX Runtime CPU",
+    "profile": "onnx",
+    "adapter": "v2_fp16",
+    "repo": "Faridzar/manga-colorization-v2-onnx",
+    "files": [
+      "manga-colorize-fp16.onnx"
+    ],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "Faridzar/manga-colorization-v2-onnx",
+        "revision": "5515e06d31b08ffd107af686cba5e98e95e8d4cf",
+        "files": [
+          {
+            "path": "manga-colorize-fp16.onnx",
+            "size": 61650260,
+            "sha256": "39660d0047ea6f1a0ddee6aa89054997f95ea566f4d56ff762f66dbcf1a1a7ef"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 3,
+    "name": "Manga Light Colorizer",
+    "size": "300.3 MB",
+    "runtime": "ONNX Runtime CPU; generator + SAM encoder",
+    "profile": "onnx",
+    "adapter": "light",
+    "repo": "sharky172/manga-light-colorizer",
+    "files": [
+      "models/v6_generator.onnx",
+      "models/v6_sam_encoder.onnx"
+    ],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "sharky172/manga-light-colorizer",
+        "revision": "2fb022c4ce55632b7671a1df306f63984928e36a",
+        "files": [
+          {
+            "path": "models/v6_generator.onnx",
+            "size": 191335312,
+            "sha256": "48284fcf0b7a606270702630f559af88eecf95bc6cdec1ff8bce8663d12b4bb6"
+          },
+          {
+            "path": "models/v6_sam_encoder.onnx",
+            "size": 108983556,
+            "sha256": "97c4cad5814e1fb12c13d1b23d3969dd9e2fce92d818539fe7db575140333a34"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 4,
+    "name": "DDColor Tiny",
+    "size": "220.4 MB",
+    "runtime": "PyTorch CPU",
+    "profile": "torch",
+    "adapter": "ddcolor",
+    "repo": "piddnad/ddcolor_paper_tiny",
+    "files": [
+      "pytorch_model.bin",
+      "config.json"
+    ],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "piddnad/ddcolor_paper_tiny",
+        "revision": "cf9fd99c1d7472689ec7413441c1b799a51866a3",
+        "files": [
+          {
+            "path": "config.json",
+            "size": 258,
+            "sha256": null
+          },
+          {
+            "path": "pytorch_model.bin",
+            "size": 220372845,
+            "sha256": "8a1277bc90a1bfbb6d2d83933a9a6bc821931879ca93e26e4fcec12165d41fce"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 5,
+    "name": "DDColor Artistic",
+    "size": "911.9 MB",
+    "runtime": "PyTorch CPU",
+    "profile": "torch",
+    "adapter": "ddcolor",
+    "repo": "piddnad/ddcolor_artistic",
+    "files": [
+      "pytorch_model.bin",
+      "config.json"
+    ],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "piddnad/ddcolor_artistic",
+        "revision": "aa10f72fffc89a6658e37b48556050b4d9a26f63",
+        "files": [
+          {
+            "path": "config.json",
+            "size": 258,
+            "sha256": null
+          },
+          {
+            "path": "pytorch_model.bin",
+            "size": 911914869,
+            "sha256": "5a076e84efce59848394f572a105f7b78f7f6e917f615d1ee88537241b96dca3"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 6,
+    "name": "SD 1.5 + Anime Lineart ControlNet",
+    "size": "~3.46 GB selected FP16 components",
+    "runtime": "PyTorch MPS, Diffusers",
+    "profile": "diffusion",
+    "adapter": "controlnet",
+    "repo": "",
+    "files": [],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "base": {
+          "repo": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+          "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+          "files": [
+            {
+              "path": "feature_extractor/preprocessor_config.json",
+              "size": 342,
+              "sha256": null
+            },
+            {
+              "path": "model_index.json",
+              "size": 541,
+              "sha256": null
+            },
+            {
+              "path": "safety_checker/config.json",
+              "size": 4723,
+              "sha256": null
+            },
+            {
+              "path": "safety_checker/model.fp16.safetensors",
+              "size": 608018440,
+              "sha256": "08902f19b1cfebd7c989f152fc0507bef6898c706a91d666509383122324b511"
+            },
+            {
+              "path": "scheduler/scheduler_config.json",
+              "size": 308,
+              "sha256": null
+            },
+            {
+              "path": "text_encoder/config.json",
+              "size": 617,
+              "sha256": null
+            },
+            {
+              "path": "text_encoder/model.fp16.safetensors",
+              "size": 246144864,
+              "sha256": "77795e2023adcf39bc29a884661950380bd093cf0750a966d473d1718dc9ef4e"
+            },
+            {
+              "path": "tokenizer/merges.txt",
+              "size": 524619,
+              "sha256": null
+            },
+            {
+              "path": "tokenizer/special_tokens_map.json",
+              "size": 472,
+              "sha256": null
+            },
+            {
+              "path": "tokenizer/tokenizer_config.json",
+              "size": 806,
+              "sha256": null
+            },
+            {
+              "path": "tokenizer/vocab.json",
+              "size": 1059962,
+              "sha256": null
+            },
+            {
+              "path": "unet/config.json",
+              "size": 743,
+              "sha256": null
+            },
+            {
+              "path": "unet/diffusion_pytorch_model.fp16.safetensors",
+              "size": 1719125304,
+              "sha256": "c83908253f9a64d08c25fc90874c9c8aef9a329ce1ca5fb909d73b0c83d1ea21"
+            },
+            {
+              "path": "vae/config.json",
+              "size": 547,
+              "sha256": null
+            },
+            {
+              "path": "vae/diffusion_pytorch_model.fp16.safetensors",
+              "size": 167335342,
+              "sha256": "4fbcf0ebe55a0984f5a5e00d8c4521d52359af7229bb4d81890039d2aa16dd7c"
+            }
+          ]
+        },
+        "control": {
+          "repo": "lllyasviel/control_v11p_sd15s2_lineart_anime",
+          "revision": "9c03a1c4f055643faa78f5b6869189642b5b8f66",
+          "files": [
+            {
+              "path": "config.json",
+              "size": 1006,
+              "sha256": null
+            },
+            {
+              "path": "diffusion_pytorch_model.fp16.safetensors",
+              "size": 722598642,
+              "sha256": "d9619372316fb8ade82353be0c2b7821fa1da60ae3842d8c99afacf1d45ff73f"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "number": 7,
+    "name": "FLUX.2 Klein 4B MLX 4-bit",
+    "size": "4.61 GB",
+    "runtime": "Apple MLX / MFLUX; float16 compute, 4 steps",
+    "profile": "mlx",
+    "adapter": "flux2",
+    "repo": "Runpod/FLUX.2-klein-4B-mflux-4bit",
+    "files": [],
+    "references": false,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "Runpod/FLUX.2-klein-4B-mflux-4bit",
+        "revision": "7ee1b3aa8178a1240050490072196a57da2bf2a9",
+        "files": [
+          {
+            "path": "config.json",
+            "size": 455,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/0.safetensors",
+            "size": 2135435091,
+            "sha256": "4425bbe79bdf4d171dfa16117d61a174a22bdfab971478bd9eb7962eea855212"
+          },
+          {
+            "path": "text_encoder/1.safetensors",
+            "size": 127582109,
+            "sha256": "941c6099f3014d6e4eb6af7deba890e1423b41e0fe4a9a218afb6b17d61c8bc8"
+          },
+          {
+            "path": "text_encoder/model.safetensors.index.json",
+            "size": 51332,
+            "sha256": null
+          },
+          {
+            "path": "tokenizer/chat_template.jinja",
+            "size": 4168,
+            "sha256": null
+          },
+          {
+            "path": "tokenizer/tokenizer.json",
+            "size": 11422650,
+            "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506"
+          },
+          {
+            "path": "tokenizer/tokenizer_config.json",
+            "size": 348,
+            "sha256": null
+          },
+          {
+            "path": "transformer/0.safetensors",
+            "size": 2145323701,
+            "sha256": "b8b21514b059d129cf27ea0650ede92608ae05b8c99ab7239148c69da954f82b"
+          },
+          {
+            "path": "transformer/1.safetensors",
+            "size": 34727730,
+            "sha256": "a85ce666eaa791dd7d8082352a61a9f3e24b36e04604bbe3856e7bebd5d61589"
+          },
+          {
+            "path": "transformer/model.safetensors.index.json",
+            "size": 26908,
+            "sha256": null
+          },
+          {
+            "path": "vae/0.safetensors",
+            "size": 165107912,
+            "sha256": "5053e0f1a87db7b97dc9f43ddba152c0d77858e87ab515fdf2ed9e6ca0374fab"
+          },
+          {
+            "path": "vae/model.safetensors.index.json",
+            "size": 17547,
+            "sha256": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 8,
+    "name": "FLUX 3 Image Klein MLX 6-bit",
+    "size": "9.01 GB",
+    "runtime": "flux3-mlx, low memory, 16 steps",
+    "profile": "flux3",
+    "adapter": "flux3",
+    "repo": "VisualInference/FLUX-3-Image-Klein-MLX-6bit",
+    "files": [],
+    "references": false,
+    "note": "Community MLX conversion; runtime memory measured locally.",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "VisualInference/FLUX-3-Image-Klein-MLX-6bit",
+        "revision": "ff3aacda6ceb95207e8dbafcf7b1e4fcd94e9a5c",
+        "files": [
+          {
+            "path": "config.json",
+            "size": 657,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/LICENSE",
+            "size": 11357,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/chat_template.json",
+            "size": 5502,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/config.json",
+            "size": 1693,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/merges.txt",
+            "size": 1671839,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/model.safetensors",
+            "size": 3845166228,
+            "sha256": "5dea352635b0d1f76901dd1977c3d4ac99bda6526053137cb4f2a881df93865c"
+          },
+          {
+            "path": "text_encoder/tokenizer.json",
+            "size": 7032403,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/tokenizer_config.json",
+            "size": 10868,
+            "sha256": null
+          },
+          {
+            "path": "text_encoder/vocab.json",
+            "size": 2776833,
+            "sha256": null
+          },
+          {
+            "path": "transformer/config.json",
+            "size": 1165,
+            "sha256": null
+          },
+          {
+            "path": "transformer/model.safetensors",
+            "size": 4832940085,
+            "sha256": "c19b0f2f25de0dd97e1456562943deee1e9f81c01d13855a18b6afb1ddca9173"
+          },
+          {
+            "path": "vae/ae.safetensors",
+            "size": 336211292,
+            "sha256": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 9,
+    "name": "MangaNinja Core ML",
+    "size": "4.94 GB + temporary compilation",
+    "runtime": "Seven experimental Core ML components",
+    "profile": "coreml",
+    "adapter": "manganinja",
+    "repo": "VioletXF/manganinja-coreml",
+    "files": [],
+    "references": true,
+    "note": "Experimental reference-only conversion; interactive point guidance omitted.",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "VioletXF/manganinja-coreml",
+        "revision": "18a3bf49c694413e8e4775aca6ac8cca42137521",
+        "files": [
+          {
+            "path": "clip.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 279693,
+            "sha256": "b06f56d2e10b3016c0e686215ddf68c253a14771dec7b8512997eea5a9bc71b2"
+          },
+          {
+            "path": "clip.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 607959168,
+            "sha256": "551e332616ac7279d050574ca14bf81ceab25431873be9901a20f84751f61fb5"
+          },
+          {
+            "path": "clip.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          },
+          {
+            "path": "contract.json",
+            "size": 48541,
+            "sha256": null
+          },
+          {
+            "path": "control.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 336114,
+            "sha256": "8540441daac7aeab9cfc11c1336344bd7c3478c4a92899cf92d3904ef8cc3bac"
+          },
+          {
+            "path": "control.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 722589888,
+            "sha256": "31ae43e8cdfd5bb7b924cb68b2982f879e5512cb6903e8b02021ccda5e5b7da7"
+          },
+          {
+            "path": "control.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          },
+          {
+            "path": "conversion/convert.py",
+            "size": 16345,
+            "sha256": null
+          },
+          {
+            "path": "conversion/package_release.py",
+            "size": 2897,
+            "sha256": null
+          },
+          {
+            "path": "conversion/requirements.txt",
+            "size": 194,
+            "sha256": null
+          },
+          {
+            "path": "conversion/sources.json",
+            "size": 3518,
+            "sha256": null
+          },
+          {
+            "path": "denoiser.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 762460,
+            "sha256": "f417449181f5b1764d5347170ec43064c150289997b5a5f4da11311392dcdc13"
+          },
+          {
+            "path": "denoiser.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 1719128832,
+            "sha256": "b4a473ccfd785d4a708cc84006529cd104eff6a25898fa5509e6739cb3373177"
+          },
+          {
+            "path": "denoiser.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          },
+          {
+            "path": "licenses/CLIP-MIT.txt",
+            "size": 1064,
+            "sha256": null
+          },
+          {
+            "path": "licenses/LineArt-MIT.txt",
+            "size": 1069,
+            "sha256": null
+          },
+          {
+            "path": "licenses/MangaNinja-CC-BY-NC-4.0.txt",
+            "size": 19917,
+            "sha256": null
+          },
+          {
+            "path": "licenses/Stable-Diffusion-CreativeML-OpenRAIL-M.txt",
+            "size": 14385,
+            "sha256": null
+          },
+          {
+            "path": "lineart.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 29378,
+            "sha256": "4ec986e9b3c7b59c5c75b62c77ccd3e7a78ed3857a785a2c9930ff3569d42fa1"
+          },
+          {
+            "path": "lineart.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 9107776,
+            "sha256": "06015858c75c93f5519916078aa8da437f2ed46c52fb778d9cdefe0f732a51eb"
+          },
+          {
+            "path": "lineart.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          },
+          {
+            "path": "manifest.json",
+            "size": 4097,
+            "sha256": null
+          },
+          {
+            "path": "reference.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 674616,
+            "sha256": "612af9d34694b7e5a9036bc7d6669b0d7344cc19915a47a63a21733a27878259"
+          },
+          {
+            "path": "reference.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 1713387776,
+            "sha256": "eb0df2bd137ca106dfd06bf94db7442f026578f87022a9ec9c720ffbc2051290"
+          },
+          {
+            "path": "reference.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          },
+          {
+            "path": "vae_decoder.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 170369,
+            "sha256": "8ea838ff2f00b06943fdaee80b83b1e5b1aa79290c7f5654f9bbea172ffd46ae"
+          },
+          {
+            "path": "vae_decoder.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 98993280,
+            "sha256": "39a4378c807ac49876127b3582e66c0111df332da781dcbe0865ca1dcb964b84"
+          },
+          {
+            "path": "vae_decoder.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          },
+          {
+            "path": "vae_encoder.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+            "size": 131683,
+            "sha256": "d6f797ea267c0ca2ebca25403509ecdebb6c34d2cb3590b6dfd75af6d991daac"
+          },
+          {
+            "path": "vae_encoder.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+            "size": 68338112,
+            "sha256": "71bf826e5ee1b455462aff0b34e3a469f5f58955ae715708962b1d81db92dc64"
+          },
+          {
+            "path": "vae_encoder.mlpackage/Manifest.json",
+            "size": 617,
+            "sha256": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 10,
+    "name": "BasicPBC-Light",
+    "size": "50.4 MB checkpoint + 21.1 MB RAFT initialization asset",
+    "runtime": "PyTorch CPU; reference color and line art; native scatter compatibility",
+    "profile": "torch",
+    "adapter": "basic_light",
+    "repo": "",
+    "files": [],
+    "references": true,
+    "note": "Retained CLIP parameters are covered by strict checkpoint loading; no separate 1.4 GB CLIP download needed.",
+    "pinned_provenance": {
+      "checkpoint.json": {
+        "sha256": "7644bb631a2210ba7003babbed1ba4b8ee385be1f4e3a1408d0156796b2ac5a6"
+      }
+    }
+  },
+  {
+    "number": 11,
+    "name": "BasicPBC-Ref",
+    "size": "90.6 MB checkpoint",
+    "runtime": "PyTorch CPU; reference colors, line art, region labels and semantic hints",
+    "profile": "torch",
+    "adapter": "basic_ref",
+    "repo": "",
+    "files": [],
+    "references": true,
+    "note": "Current architecture needs no separate CLIP weights; coarse semantic hints are page-specific.",
+    "pinned_provenance": {
+      "checkpoint.json": {
+        "sha256": "a70061f555dd9a187523a580109aa4e2b8a99666fa3fdaf712b6667b52886630"
+      }
+    }
+  },
+  {
+    "number": 12,
+    "name": "DACoN v1.1",
+    "size": "~1.36 GB including DINOv2-Large",
+    "runtime": "PyTorch CPU; closed line regions and reference colors",
+    "profile": "torch",
+    "adapter": "dacon",
+    "repo": "",
+    "files": [],
+    "references": true,
+    "note": "",
+    "pinned_provenance": {
+      "checkpoint.json": {
+        "dacon_v1_1.pth": "6312ecb6a928bd34e0a044a1108a55ebc02bbfa1a08c44437519df154609139c",
+        "dinov2_vitl14_pretrain.pth": "d5383ea8f4877b2472eb973e0fd72d557c7da5d3611bd527ceeb1d7162cbf428"
+      }
+    }
+  },
+  {
+    "number": 13,
+    "name": "ColorizeDiffusion v1.5",
+    "size": "8.28 GB including required OpenCLIP",
+    "runtime": "Experimental PyTorch MPS adaptation of author inference",
+    "profile": "research",
+    "adapter": "colorize_diffusion",
+    "repo": "tellurion/ColorizeDiffusion",
+    "files": [
+      "switch-eps.safetensors"
+    ],
+    "references": true,
+    "note": "",
+    "pinned_provenance": {
+      "source.json": {
+        "repo": "tellurion/ColorizeDiffusion",
+        "revision": "4121e8d353c07049f4f722238c103d21ce6933ab",
+        "files": [
+          {
+            "path": "switch-eps.safetensors",
+            "size": 4332998606,
+            "sha256": "2ed93a0a25638280475e89ef51f409113a7a1c90588661ce4c04c63112977425"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "number": 14,
+    "name": "MangaDiT",
+    "size": "~33.8 GB standard stack",
+    "runtime": "Published setup: A100 80 GB; local feasibility check",
+    "profile": "research",
+    "adapter": "mangadit_preflight",
+    "repo": "",
+    "files": [],
+    "references": true,
+    "note": "Assess standard and quantized route compatibility before downloading full weights.",
+    "pinned_provenance": {
+      "preflight.json": {
+        "source": {
+          "repo": "CyberAgentAILab/MangaDiT",
+          "revision": "444ec21eba2053b6b28b7d8e031d6ef28db86a84",
+          "archive_sha256": "26fc881808fe98599d8b4491378a42c87460d1c75769dcbf54a5f0bfaf58bc8a"
+        },
+        "base_repo": "black-forest-labs/FLUX.1-dev",
+        "revision": "3de623fc3c33e44ffbe2bad470d0f45bccf2eb21",
+        "standard_transformer_bytes": 23802954040,
+        "standard_stack_bytes": 33741413878,
+        "physical_memory_bytes": 17179869184,
+        "free_disk_bytes": 37641244672,
+        "reason": "The author path eagerly loads the FLUX.1-dev stack and uses a custom hierarchical attention forward. Standard transformer weights alone exceed physical RAM. No compatible quantized Mac implementation of that forward was found; a generic FLUX quantization is not a MangaDiT test."
+      }
+    }
+  }
+]

@@ -1,0 +1,6 @@
+[project]
+name = "manga-light-colorizer-pipeline"
+version = "1.0.0"
+description = "Local Manga Light Colorizer folder pipeline with five image variants"
+requires-python = ">=3.11,<3.13"
+license = "GPL-3.0-only"

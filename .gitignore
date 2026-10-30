@@ -1,0 +1,15 @@
+/.bench/
+/.cache/
+/.venv/
+/output/
+/input/*
+!/input/.gitkeep
+__pycache__/
+*.pyc
+*.egg-info/
+.DS_Store
+*.onnx
+*.safetensors
+*.ckpt
+.env
+.env.*

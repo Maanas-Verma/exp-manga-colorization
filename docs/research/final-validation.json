@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-30",
+  "pipeline_version": "1.0.0",
+  "live_pages_complete": 5,
+  "output_folders": 5,
+  "output_pngs_validated": 25,
+  "input_hashes_unchanged": 5,
+  "text_pixel_invariants_verified": 5,
+  "approved_raw_pngs_byte_identical": 5,
+  "approved_recommended_pngs_byte_identical": 5,
+  "local_report_links_verified": 52,
+  "synthetic_local_ocr_regions": 2,
+  "unit_tests_passed": 13,
+  "unit_tests_skipped": 0,
+  "model_load_seconds": 0.7758209580206312,
+  "processing_seconds_total": 18.54584804206388,
+  "pages": [
+    {
+      "image": "1194-001.png",
+      "source_sha256": "b8458f056478e672cd10ea9c66409cbb109e84efc450eb62214eb7551d7d80a9",
+      "outputs": {
+        "raw": {
+          "path": "01_raw_model_output/1194-001.png",
+          "sha256": "519541bf840e6c014a83833d2956e52ee5f50f132710218fde640782838783b0"
+        },
+        "ink": {
+          "path": "03_ink_only_previous/1194-001.png",
+          "sha256": "f4c3188c1ef8370da48e481c427c65f1a6bd423e391af9930beac46b30730e74"
+        },
+        "text": {
+          "path": "02_original_text_recommended/1194-001.png",
+          "sha256": "d4fe580e5d6ff67e833f08c360accde8dc718333e294fabd121d81f1f37fc474"
+        },
+        "mask": {
+          "path": "04_text_restoration_mask/1194-001.png",
+          "sha256": "d03da3626c0e179fe92f62d460cbfe57f15a7a9c49269a7029dfe26a668f7196"
+        },
+        "luminance": {
+          "path": "05_original_luminance_older_method/1194-001.png",
+          "sha256": "e452fe2790a00a82df5bb680511c98debd02cd2d2c2d3111e014dd4c00275726"
+        }
+      },
+      "processing_seconds": 3.5034053749986924,
+      "inference_seconds": 2.7261805829475634,
+      "worker_peak_rss_bytes": 1712766976
+    },
+    {
+      "image": "1194-003.png",
+      "source_sha256": "dd7791233b75063a700bdcaf2d8c71c03fbb97c0157102551d49d421f0d1f671",
+      "outputs": {
+        "raw": {
+          "path": "01_raw_model_output/1194-003.png",
+          "sha256": "08af063c5d9f02e4b21ef0e2e5a24a69cda8f38f5749ae544230ac2b913cda72"
+        },
+        "ink": {
+          "path": "03_ink_only_previous/1194-003.png",
+          "sha256": "f8b151d821b6b41844ed011f294b8902dbc975f6df296daa5aede218cad6601a"
+        },
+        "text": {
+          "path": "02_original_text_recommended/1194-003.png",
+          "sha256": "d993d1661985c210b05000130bbc4d45661b5f57ad98411819845153d2ab0550"
+        },
+        "mask": {
+          "path": "04_text_restoration_mask/1194-003.png",
+          "sha256": "1e495b25b50f63d5c7b58e6fecfcff8068839968ba11f30566a5cfe950a2322c"
+        },
+        "luminance": {
+          "path": "05_original_luminance_older_method/1194-003.png",
+          "sha256": "e2603dc628814146f139bee9650a538dc3a919a622201628963ab5adbf0b95b4"
+        }
+      },
+      "processing_seconds": 4.403231667005457,
+      "inference_seconds": 3.6614204170182347,
+      "worker_peak_rss_bytes": 1780121600
+    },
+    {
+      "image": "1194-004.png",
+      "source_sha256": "d42351ba0e18ee4cc803b57a8037097051d6b0817f456eeabc1fb0671d57026f",
+      "outputs": {
+        "raw": {
+          "path": "01_raw_model_output/1194-004.png",
+          "sha256": "d28f822f1ed14f13f9c0ea58caf424204aff51f9f429fa02bebf019ebdb2bf59"
+        },
+        "ink": {
+          "path": "03_ink_only_previous/1194-004.png",
+          "sha256": "4a968679209e62c2753f2a87d8c369abd1044ea662344514913be1208adf7696"
+        },
+        "text": {
+          "path": "02_original_text_recommended/1194-004.png",
+          "sha256": "4b958af7b9072e990cd314371ce9ee0991e6eefa21b87375592ba6d0c491ab85"
+        },
+        "mask": {
+          "path": "04_text_restoration_mask/1194-004.png",
+          "sha256": "67052d0a1f45d86006f5bb13dcc85bd57e0080ed0ee9cf05414d7b818dfe845c"
+        },
+        "luminance": {
+          "path": "05_original_luminance_older_method/1194-004.png",
+          "sha256": "557d84423464ad4ae629e83e6e6ff9a9f6faaf47c3504d85a1a9487a2c3b1b01"
+        }
+      },
+      "processing_seconds": 3.6999810420093127,
+      "inference_seconds": 2.823838957992848,
+      "worker_peak_rss_bytes": 1780121600
+    },
+    {
+      "image": "1194-005.png",
+      "source_sha256": "80e69d531efc0c887c2bca8576d67595b3541bf7d53acb0adca8801c3e8b646b",
+      "outputs": {
+        "raw": {
+          "path": "01_raw_model_output/1194-005.png",
+          "sha256": "0f609b0ef13af7d4d9208ba394f98a1e2e5dc813f422ed001b91336bc333bdea"
+        },
+        "ink": {
+          "path": "03_ink_only_previous/1194-005.png",
+          "sha256": "702da3aead8037766d5df7cacb8feb1fac7b33639ccae8d22d8f21467c4e3058"
+        },
+        "text": {
+          "path": "02_original_text_recommended/1194-005.png",
+          "sha256": "6386bc3d6ac68bc8429f7bbdf57ac8bb46f0dec4c3a58e8b128c73f0375a89d6"
+        },
+        "mask": {
+          "path": "04_text_restoration_mask/1194-005.png",
+          "sha256": "8d062f3003c3aa0c0466114814c705b1aa7b16afb88b2ddf24c97eb8a44985f1"
+        },
+        "luminance": {
+          "path": "05_original_luminance_older_method/1194-005.png",
+          "sha256": "8188251ed2e22e5cb2b41bac77fc8d7c24a672b43ade47cd43b98d892ba81b7e"
+        }
+      },
+      "processing_seconds": 3.4426354170427658,
+      "inference_seconds": 2.7836883749696426,
+      "worker_peak_rss_bytes": 1780121600
+    },
+    {
+      "image": "1194-006.png",
+      "source_sha256": "f0feb9f65111c1e4056c4f91a1daf7648ce7f872f24b2cc771de990bef9c39d5",
+      "outputs": {
+        "raw": {
+          "path": "01_raw_model_output/1194-006.png",
+          "sha256": "fae6c04551fbd233cd651b621a4de53df9c00d6e1b86b9776b2d01bed2ad7b12"
+        },
+        "ink": {
+          "path": "03_ink_only_previous/1194-006.png",
+          "sha256": "4e83d371887f13a773cb413a833346f99393033702f32286ddca13fce755ab54"
+        },
+        "text": {
+          "path": "02_original_text_recommended/1194-006.png",
+          "sha256": "6c3803b153c8d2a8b5bb37a7b46fac2bedd0164f6130bca9e1df30bb727fa58e"
+        },
+        "mask": {
+          "path": "04_text_restoration_mask/1194-006.png",
+          "sha256": "75bfbf5dac803288804ab8bba862e9c3df1efa52df65c157910cb1b80821f4f1"
+        },
+        "luminance": {
+          "path": "05_original_luminance_older_method/1194-006.png",
+          "sha256": "76b2709f45bc8cfcd311b11878027de30340dbd90f6c0c9033cfc239bbf81d28"
+        }
+      },
+      "processing_seconds": 3.496594541007653,
+      "inference_seconds": 2.6572231670143083,
+      "worker_peak_rss_bytes": 1780121600
+    }
+  ]
+}
